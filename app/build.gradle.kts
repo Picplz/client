@@ -117,6 +117,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    // kakao map
+    implementation(libs.kakao.maps)
 }
 
 apply(plugin = "dagger.hilt.android.plugin")
