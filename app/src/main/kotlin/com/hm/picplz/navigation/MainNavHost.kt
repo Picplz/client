@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import com.hm.picplz.data.model.User
 import com.hm.picplz.ui.screen.main.MainScreen
+import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_common.SignUpScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_client.SignUpClientScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_common.views.SignUpCompletionScreen
@@ -24,7 +25,7 @@ fun MainNavHost(
 ) {
     val startDestination = when (uiState) {
         is MainActivityUiState.Success -> "main"
-        else -> "login"
+        else -> "search-photographer"
     }
 
     NavHost(
@@ -74,5 +75,8 @@ fun MainNavHost(
             )
         }
 
+        composable("search-photographer") {
+            SearchPhotographerScreen(mainNavController = navController)
+        }
     }
 }
