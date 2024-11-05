@@ -127,3 +127,11 @@ val pretendardTypography = Typography(
         letterSpacing = 0.sp
     )
 )
+
+val buttonText = TextStyle(
+    fontFamily = Pretendard,
+    fontWeight = FontWeight.Bold,
+    fontSize = 16.sp,
+    lineHeight = 16.sp * 1.4,
+    letterSpacing = 0.sp
+)
