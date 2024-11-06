@@ -8,6 +8,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
@@ -21,8 +22,93 @@ fun KakaoMapView(
     modifier: Modifier = Modifier,
     onMapReady: (KakaoMap) -> Unit = {}
 ) {
+    var mapView by remember { mutableStateOf<MapView?>(null) }
+
+    AndroidView(
+        modifier = modifier
+            .fillMaxSize(),
+        factory = { context ->
+            MapView(context).also { mapView = it }.apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
+                start(
+                    object : MapLifeCycleCallback() {
+                        override fun onMapDestroy() {
+                            // 지도 api가 정상적으로 종료될 때 호출
+                        }
+
+                        override fun onMapError(error: Exception) {
+                            // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+                            Log.e("KakaoMapView", "Map Error: ${error.message}")
+                            error.printStackTrace()
+                            if (error is MapAuthException) {
+                                when (error.errorCode) {
+                                    -1 -> Log.e("KakaoMapView", "인증 과정 중 원인을 알 수 없는 에러가 발생한 상태")
+                                    -2 -> Log.e("KakaoMapView", "통신 연결 시도 중 발생하는 에러")
+                                    -3 -> Log.e(
+                                        "KakaoMapView",
+                                        "통신 연결 중 SocketTimeoutException 에러가 발생한 경우"
+                                    )
+
+                                    -4 -> Log.e(
+                                        "KakaoMapView",
+                                        "통신 시도 중 ConnectTimeoutException 에러가 발생한 경우"
+                                    )
+
+                                    400 -> Log.e(
+                                        "KakaoMapView",
+                                        "일반적인 오류. 주로 API에 필요한 필수 파라미터와 관련하여 서버가 클라이언트 오류를 감지해 요청을 처리하지 못한 상태입니다."
+                                    )
+
+                                    401 -> Log.e(
+                                        "KakaoMapView",
+                                        "인증 오류. 해당 리소스에 유효한 인증 자격 증명이 없어 요청에 실패한 상태"
+                                    )
+
+                                    403 -> Log.e(
+                                        "KakaoMapView",
+                                        "권한 오류. 서버에 요청이 전달되었지만, 권한 때문에 거절된 상태"
+                                    )
+
+                                    429 -> Log.e(
+                                        "KakaoMapView",
+                                        "쿼터 초과. 정해진 사용량이나 초당 요청 한도를 초과한 경우"
+                                    )
+
+                                    499 -> Log.e(
+                                        "KakaoMapView",
+                                        "통신 실패 오류. 인터넷 연결 상태 확인이 필요한 경우"
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    object : KakaoMapReadyCallback() {
+                        override fun onMapReady(kakaoMap: KakaoMap) {
+                            // 인증 후 API가 정상적으로 실행될 때 호출됨
+                            onMapReady(kakaoMap)
+                            Log.e("KakaoMapView", "카카오 맵 준비 완료")
+
+                        }
+
+                        override fun getPosition(): LatLng {
+                            // 지도 시작 시 위치 좌표를 설정
+                            return LatLng.from(37.406960, 127.115587)
+                        }
+
+                        override fun getZoomLevel(): Int {
+                            // 지도 시작 시 확대/축소 줌 레벨 설정
+                            return 15
+                        }
+                    }
+                )
+            }
+        }
+    )
+
     val lifecycleOwner = LocalLifecycleOwner.current
-    val mapView by remember { mutableStateOf<MapView?>(null) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = object : DefaultLifecycleObserver {
@@ -41,88 +127,4 @@ fun KakaoMapView(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
-    AndroidView(
-        modifier = modifier
-            .fillMaxSize(),
-        factory = { context ->
-            MapView(context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                )
-                start(
-                    object : MapLifeCycleCallback() {
-                        override fun onMapDestroy() {
-                            // 지도 api가 정상적으로 종료될 때 호출
-                        }
-
-                        override fun onMapError(error: Exception) {
-                            // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
-                            Log.e("KakaoMapView", "Map Error: ${error.message}")
-                            error.printStackTrace()
-                                if (error is MapAuthException) {
-                                    when (error.errorCode) {
-                                        -1 -> Log.e("KakaoMapView", "인증 과정 중 원인을 알 수 없는 에러가 발생한 상태")
-                                        -2 -> Log.e("KakaoMapView", "통신 연결 시도 중 발생하는 에러")
-                                        -3 -> Log.e(
-                                            "KakaoMapView",
-                                            "통신 연결 중 SocketTimeoutException 에러가 발생한 경우"
-                                        )
-
-                                        -4 -> Log.e(
-                                            "KakaoMapView",
-                                            "통신 시도 중 ConnectTimeoutException 에러가 발생한 경우"
-                                        )
-
-                                        400 -> Log.e(
-                                            "KakaoMapView",
-                                            "일반적인 오류. 주로 API에 필요한 필수 파라미터와 관련하여 서버가 클라이언트 오류를 감지해 요청을 처리하지 못한 상태입니다."
-                                        )
-
-                                        401 -> Log.e(
-                                            "KakaoMapView",
-                                            "인증 오류. 해당 리소스에 유효한 인증 자격 증명이 없어 요청에 실패한 상태"
-                                        )
-
-                                        403 -> Log.e(
-                                            "KakaoMapView",
-                                            "권한 오류. 서버에 요청이 전달되었지만, 권한 때문에 거절된 상태"
-                                        )
-
-                                        429 -> Log.e(
-                                            "KakaoMapView",
-                                            "쿼터 초과. 정해진 사용량이나 초당 요청 한도를 초과한 경우"
-                                        )
-
-                                        499 -> Log.e(
-                                            "KakaoMapView",
-                                            "통신 실패 오류. 인터넷 연결 상태 확인이 필요한 경우"
-                                        )
-                                    }
-                                }
-                        }
-                    },
-                    object : KakaoMapReadyCallback() {
-                        override fun onMapReady(kakaoMap: KakaoMap) {
-                            // 인증 후 API가 정상적으로 실행될 때 호출됨
-                            onMapReady(kakaoMap)
-                            Log.e("KakaoMapView", "된건가")
-
-                        }
-
-                        override fun getPosition(): LatLng {
-                            // 지도 시작 시 위치 좌표를 설정
-                            return LatLng.from(37.406960, 127.115587)
-                        }
-
-                        override fun getZoomLevel(): Int {
-                            // 지도 시작 시 확대/축소 줌 레벨 설정
-                            return 15
-                        }
-                    }
-                )
-            }
-        }
-    )
 }
