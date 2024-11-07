@@ -26,12 +26,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
 import androidx.navigation.compose.rememberNavController
 import com.hm.picplz.MainActivity
 import com.hm.picplz.R
@@ -122,15 +119,15 @@ fun SignUpSelectTypeScreen(
                             text = "찍사",
                             selectionState =currentState.photographerSelectionState,
                             onClick = { viewModel.handleIntent(ClickUserTypeButton(UserType.Photographer)) },
-                            selectedIconResId = R.drawable.user_selected,
-                            deSelectedIconResId = R.drawable.user_deselected,
+                            selectedIconResId = R.drawable.photographer_selected,
+                            deSelectedIconResId = R.drawable.photographer_deselected,
                         )
                         CommonSelectImageButton(
                             text = "고객",
                             selectionState =currentState.userSelectionState,
                             onClick = { viewModel.handleIntent(ClickUserTypeButton(UserType.User)) },
-                            selectedIconResId = R.drawable.photographer_selected,
-                            deSelectedIconResId = R.drawable.photographer_deselected,
+                            selectedIconResId = R.drawable.user_selected,
+                            deSelectedIconResId = R.drawable.user_deselected,
                         )
                     }
                     Spacer(
