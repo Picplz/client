@@ -25,8 +25,7 @@ fun KakaoMapView(
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
     AndroidView(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier,
         factory = { context ->
             MapView(context).also { mapView = it }.apply {
                 layoutParams = ViewGroup.LayoutParams(
