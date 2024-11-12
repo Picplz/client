@@ -1,6 +1,5 @@
 package com.hm.picplz.ui.screen.search_photographer
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,15 +11,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hm.picplz.ui.screen.common.CommonTopBar
-import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerIntent.NavigateToPrev
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
-import com.hm.picplz.viewmodel.SearchPhotograperViewModel
+import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 
 @Composable
 fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchPhotograperViewModel = viewModel(),
+    viewModel: SearchPhotographerViewModel = viewModel(),
     mainNavController: NavHostController,
 ) {
     Scaffold (
@@ -37,7 +35,11 @@ fun SearchPhotographerScreen(
                 text = "내 주변 작가 찾기",
                 onClickBack = {}
             )
-            KakaoMapView()
+            KakaoMapView(
+                onMapReady = { kakaoMap ->
+                    viewModel.displayLabelsOnMap(kakaoMap)
+                }
+            )
         }
 
     }
