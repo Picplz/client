@@ -19,9 +19,9 @@ class SearchPhotographerViewModel : ViewModel() {
 
         val labelStyles = LabelStyles.from(
             "photographerLabel",
-            LabelStyle.from(R.drawable.info).setZoomLevel(8),
-            LabelStyle.from(R.drawable.info).setZoomLevel(11),
-            LabelStyle.from(R.drawable.info)
+            LabelStyle.from(R.drawable.marker).setZoomLevel(8),
+            LabelStyle.from(R.drawable.marker).setZoomLevel(11),
+            LabelStyle.from(R.drawable.marker)
                 .setTextStyles(
                     24,
                     MainThemeColor.Black.toArgb()
