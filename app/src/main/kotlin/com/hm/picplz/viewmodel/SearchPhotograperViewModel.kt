@@ -1,7 +1,11 @@
 package com.hm.picplz.viewmodel
 
 import android.content.Context
+import android.location.Address
 import android.location.Geocoder
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import com.hm.picplz.R
@@ -13,15 +17,11 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextBuilder
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
-import javax.inject.Inject
 
-class SearchPhotographerViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
-) : ViewModel() {
+class SearchPhotographerViewModel: ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
 
@@ -57,7 +57,13 @@ class SearchPhotographerViewModel @Inject constructor(
         }
     }
 
-    fun displayAddressOnMap(kakaoMap: KakaoMap) {
+    fun displayAddressOnMap(kakaoMap: KakaoMap, context: Context) {
         val geocoder = Geocoder(context, Locale.KOREA)
+        try {
+            val addresses = geocoder.getFromLocation(37.406960, 127.115587, 1)
+            Log.d("Geocoder", "addresses: $addresses")
+        } catch (e: Exception) {
+            Log.e("Geocoder", "에러: ${e.message}")
+        }
     }
 }

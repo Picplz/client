@@ -1,11 +1,14 @@
 package com.hm.picplz.ui.screen.search_photographer
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -15,12 +18,14 @@ import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchPhotographerViewModel = viewModel(),
     mainNavController: NavHostController,
 ) {
+    val context = LocalContext.current
     Scaffold (
         modifier = Modifier
             .fillMaxSize(),
@@ -38,6 +43,7 @@ fun SearchPhotographerScreen(
             KakaoMapView(
                 onMapReady = { kakaoMap ->
                     viewModel.displayLabelsOnMap(kakaoMap)
+                    viewModel.displayAddressOnMap(kakaoMap, context)
                 }
             )
         }
@@ -45,6 +51,7 @@ fun SearchPhotographerScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Preview(showBackground = true)
 @Composable
 fun SearchPhotographerPreview() {
