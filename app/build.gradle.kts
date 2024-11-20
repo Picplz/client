@@ -36,6 +36,8 @@ android {
             useSupportLibrary = true
         }
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "${localProperties["kakao_native_app_key"]}")
+        buildConfigField("String", "KAKAO_REST_API_KEY", "${localProperties["kakao_rest_api_key"]}")
+
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = localProperties["kakao_native_app_key"] ?: ""
     }
 
