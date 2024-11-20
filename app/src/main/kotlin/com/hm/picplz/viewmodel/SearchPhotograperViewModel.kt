@@ -1,8 +1,11 @@
 package com.hm.picplz.viewmodel
 
+import android.content.Context
+import android.location.Geocoder
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import com.hm.picplz.R
+import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerState
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
@@ -10,9 +13,17 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.Locale
+import javax.inject.Inject
 
-class SearchPhotographerViewModel : ViewModel() {
+class SearchPhotographerViewModel @Inject constructor(
+    @ApplicationContext private val context: Context
+) : ViewModel() {
+    private val _state = MutableStateFlow(SearchPhotographerState.idle())
+    val state : StateFlow<SearchPhotographerState> get() = _state
 
     fun displayLabelsOnMap(kakaoMap: KakaoMap) {
         val labelManager = kakaoMap.labelManager
@@ -29,22 +40,24 @@ class SearchPhotographerViewModel : ViewModel() {
                 .setZoomLevel(15)
         )
 
-        val styles = labelManager?.addLabelStyles(labelStyles)
-
         val photographerLocations = listOf(
             LatLng.from(37.406960, 127.115587),
             LatLng.from(37.408960, 127.117587)
         )
 
+        val styles = labelManager?.addLabelStyles(labelStyles)
+        val texts = LabelTextBuilder().setTexts("작가")
+
         photographerLocations.forEach { location ->
-            labelManager?.layer?.addLabel(
-                LabelOptions.from(location)
-                    .setStyles(styles)
-                    .setTexts(
-                        LabelTextBuilder()
-                            .setTexts("작가")
-                    )
-            )
+            val options = LabelOptions.from(location)
+                .setStyles(styles)
+                .setTexts(texts)
+            val layer = labelManager?.layer
+            layer?.addLabel(options)
         }
+    }
+
+    fun displayAddressOnMap(kakaoMap: KakaoMap) {
+        val geocoder = Geocoder(context, Locale.KOREA)
     }
 }
