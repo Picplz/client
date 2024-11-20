@@ -1,7 +1,5 @@
 package com.hm.picplz.data.model
 
-import com.hm.picplz.BuildConfig
-
 data class KaKaoAddressRequest(
     val latitude: Double,
     val longitude: Double
