@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface KakaoMapService {
     @GET("v2/local/geo/coord2address.json")
-    suspend fun getAddressFromCoords(
+    suspend fun getAddressFromCoordsService(
         @Header("Authorization") authorization: String,
         @Query("x") longitude: Double,
         @Query("y") latitude: Double
