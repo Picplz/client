@@ -1,14 +1,13 @@
 package com.hm.picplz.viewmodel
 
-import android.content.Context
-import android.location.Address
-import android.location.Geocoder
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hm.picplz.R
+import com.hm.picplz.data.model.KaKaoAddressRequest
+import com.hm.picplz.data.source.KakaoMapSource
+import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerIntent
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerState
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.kakao.vectormap.KakaoMap
@@ -19,11 +18,34 @@ import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.Locale
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SearchPhotographerViewModel: ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
+
+    private val kakaoSource = KakaoMapSource()
+
+    fun handleIntent(intent: SearchPhotographerIntent) {
+        when (intent) {
+            is SearchPhotographerIntent.SetAddress -> {
+                _state.update { it.copy(address = intent.address) }
+            }
+            is SearchPhotographerIntent.GetAddress -> {
+                viewModelScope.launch {
+                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.latitude, intent.longitude))
+                        .onSuccess { response ->
+                            val address = response.documents.firstOrNull()?.address?.address_name ?: ""
+                            handleIntent(SearchPhotographerIntent.SetAddress(address))
+                        }
+                        .onFailure { error ->
+                            Log.e("kakaoMapAddressSearchError", "좌표 검색 실패 : ", error)
+                        }
+                }
+            }
+        }
+    }
 
     fun displayLabelsOnMap(kakaoMap: KakaoMap) {
         val labelManager = kakaoMap.labelManager
@@ -54,16 +76,6 @@ class SearchPhotographerViewModel: ViewModel() {
                 .setTexts(texts)
             val layer = labelManager?.layer
             layer?.addLabel(options)
-        }
-    }
-
-    fun displayAddressOnMap(kakaoMap: KakaoMap, context: Context) {
-        val geocoder = Geocoder(context, Locale.KOREA)
-        try {
-            val addresses = geocoder.getFromLocation(37.406960, 127.115587, 1)
-            Log.d("Geocoder", "addresses: $addresses")
-        } catch (e: Exception) {
-            Log.e("Geocoder", "에러: ${e.message}")
         }
     }
 }
