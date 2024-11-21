@@ -2,7 +2,6 @@ package com.hm.picplz.ui.screen.search_photographer
 
 import android.util.Log
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -15,6 +14,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.kakao.vectormap.*
+import com.kakao.vectormap.camera.CameraPosition
 
 
 @Composable
@@ -26,7 +26,8 @@ fun KakaoMapView(
     initialPosition: LatLng = LatLng.from(37.406960, 127.115587),
     initialZoomLevel: Int = 15,
     onResume: () -> Unit = {},
-    onPause: () -> Unit = {}
+    onPause: () -> Unit = {},
+    onCameraMoveEnd: (KakaoMap, CameraPosition, GestureType) -> Unit = { _: KakaoMap, _: CameraPosition, _: GestureType -> },
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
@@ -96,10 +97,16 @@ fun KakaoMapView(
                         override fun onMapReady(kakaoMap: KakaoMap) {
                             // 인증 후 API가 정상적으로 실행될 때 호출됨
                             onMapReady(kakaoMap)
-                            Log.e("KakaoMapView", "카카오 맵 준비 완료")
-
+                            kakaoMap.setOnCameraMoveEndListener(object : KakaoMap.OnCameraMoveEndListener {
+                                override fun onCameraMoveEnd(
+                                    kakaoMap: KakaoMap,
+                                    cameraPosition: CameraPosition,
+                                    gestureType: GestureType
+                                ) {
+                                    onCameraMoveEnd(kakaoMap, cameraPosition, gestureType)
+                                }
+                            })
                         }
-
                         override fun getPosition(): LatLng {
                             // 지도 시작 시 위치 좌표를 설정
                             return initialPosition
