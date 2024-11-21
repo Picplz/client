@@ -21,6 +21,7 @@ import com.hm.picplz.ui.screen.common.CommonTopBar
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
+import com.kakao.vectormap.LatLng
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -53,7 +54,10 @@ fun SearchPhotographerScreen(
                 KakaoMapView(
                     onMapReady = { kakaoMap ->
                         viewModel.displayLabelsOnMap(kakaoMap)
-                        viewModel.handleIntent(SearchPhotographerIntent.GetAddress(37.406960,127.115587))
+                        viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
+                    },
+                    onCameraMoveEnd = {_, cameraPosition, _ ->
+                        viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
                     }
                 )
                 Text(
