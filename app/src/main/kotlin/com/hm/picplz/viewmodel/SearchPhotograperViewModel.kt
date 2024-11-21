@@ -34,7 +34,7 @@ class SearchPhotographerViewModel: ViewModel() {
             }
             is SearchPhotographerIntent.GetAddress -> {
                 viewModelScope.launch {
-                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.longitude, intent.latitude))
+                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.longitude.toString(), intent.latitude.toString()))
                         .onSuccess { response ->
                             val address = response.documents.firstOrNull()?.address?.address_name ?: ""
                             handleIntent(SearchPhotographerIntent.SetAddress(address))
