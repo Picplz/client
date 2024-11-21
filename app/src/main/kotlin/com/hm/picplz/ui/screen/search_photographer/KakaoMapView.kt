@@ -97,15 +97,13 @@ fun KakaoMapView(
                         override fun onMapReady(kakaoMap: KakaoMap) {
                             // 인증 후 API가 정상적으로 실행될 때 호출됨
                             onMapReady(kakaoMap)
-                            kakaoMap.setOnCameraMoveEndListener(object : KakaoMap.OnCameraMoveEndListener {
-                                override fun onCameraMoveEnd(
-                                    kakaoMap: KakaoMap,
-                                    cameraPosition: CameraPosition,
-                                    gestureType: GestureType
-                                ) {
-                                    onCameraMoveEnd(kakaoMap, cameraPosition, gestureType)
-                                }
-                            })
+                            kakaoMap.setOnCameraMoveEndListener { cameraListenerKakaoMap, cameraPosition, gestureType ->
+                                onCameraMoveEnd(
+                                    cameraListenerKakaoMap,
+                                    cameraPosition,
+                                    gestureType
+                                )
+                            }
                         }
                         override fun getPosition(): LatLng {
                             // 지도 시작 시 위치 좌표를 설정
