@@ -1,8 +1,8 @@
 package com.hm.picplz.data.model
 
 data class KaKaoAddressRequest(
-    val latitude: Double,
-    val longitude: Double
+    val x: Double,
+    val y: Double
 )
 
 data class KaKaoAddressResponse(

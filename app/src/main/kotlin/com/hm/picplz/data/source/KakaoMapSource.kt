@@ -19,8 +19,8 @@ class KakaoMapSource {
         runCatching {
             kakaoMapService.getAddressFromCoordsService(
                 authorization = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}",
-                longitude = request.longitude,
-                latitude = request.latitude
+                x = request.x,
+                y = request.y
             )
         }
 }

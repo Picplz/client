@@ -9,7 +9,7 @@ interface KakaoMapService {
     @GET("v2/local/geo/coord2address.json")
     suspend fun getAddressFromCoordsService(
         @Header("Authorization") authorization: String,
-        @Query("x") longitude: Double,
-        @Query("y") latitude: Double
+        @Query("x") x: Double,
+        @Query("y") y: Double
     ): KaKaoAddressResponse
 }
