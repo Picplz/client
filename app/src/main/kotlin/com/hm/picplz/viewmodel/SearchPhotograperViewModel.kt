@@ -34,7 +34,7 @@ class SearchPhotographerViewModel: ViewModel() {
             }
             is SearchPhotographerIntent.GetAddress -> {
                 viewModelScope.launch {
-                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.longitude.toString(), intent.latitude.toString()))
+                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.Coords.longitude.toString(), intent.Coords.latitude.toString()))
                         .onSuccess { response ->
                             val twoDepthRegion = response.documents.firstOrNull()?.address?.region_2depth_name ?: ""
                             val threeDepthRegion = response.documents.firstOrNull()?.address?.region_3depth_name ?: ""
@@ -45,6 +45,10 @@ class SearchPhotographerViewModel: ViewModel() {
                             Log.e("kakaoMapAddressSearch", "좌표 검색 실패 : ", error)
                         }
                 }
+            }
+            is SearchPhotographerIntent.SetCenterCoords -> {
+                _state.update { it.copy(centerCoords = intent.centerCoords) }
+                handleIntent(SearchPhotographerIntent.GetAddress(intent.centerCoords))
             }
         }
     }
