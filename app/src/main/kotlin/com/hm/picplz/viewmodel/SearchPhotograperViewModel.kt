@@ -34,13 +34,13 @@ class SearchPhotographerViewModel: ViewModel() {
             }
             is SearchPhotographerIntent.GetAddress -> {
                 viewModelScope.launch {
-                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.latitude, intent.longitude))
+                    kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.longitude, intent.latitude))
                         .onSuccess { response ->
                             val address = response.documents.firstOrNull()?.address?.address_name ?: ""
                             handleIntent(SearchPhotographerIntent.SetAddress(address))
                         }
                         .onFailure { error ->
-                            Log.e("kakaoMapAddressSearchError", "좌표 검색 실패 : ", error)
+                            Log.e("kakaoMapAddressSearch", "좌표 검색 실패 : ", error)
                         }
                 }
             }

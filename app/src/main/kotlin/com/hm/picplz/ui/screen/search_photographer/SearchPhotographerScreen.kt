@@ -53,7 +53,7 @@ fun SearchPhotographerScreen(
                 KakaoMapView(
                     onMapReady = { kakaoMap ->
                         viewModel.displayLabelsOnMap(kakaoMap)
-                        viewModel.handleIntent(SearchPhotographerIntent.GetAddress(37.406960, 127.115587))
+                        viewModel.handleIntent(SearchPhotographerIntent.GetAddress(37.406960,127.115587))
                     }
                 )
                 Text(
