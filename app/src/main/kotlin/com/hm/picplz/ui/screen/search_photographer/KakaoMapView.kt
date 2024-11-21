@@ -24,7 +24,7 @@ fun KakaoMapView(
     onMapReady: (KakaoMap) -> Unit = {},
     onMapError: (Exception) -> Unit = {},
     initialPosition: LatLng = LatLng.from(37.406960, 127.115587),
-    initialZoomLevel: Int = 15,
+    initialZoomLevel: Int = 17,
     onResume: () -> Unit = {},
     onPause: () -> Unit = {},
     onCameraMoveEnd: (KakaoMap, CameraPosition, GestureType) -> Unit = { _: KakaoMap, _: CameraPosition, _: GestureType -> },
