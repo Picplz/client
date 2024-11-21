@@ -20,7 +20,13 @@ import com.kakao.vectormap.*
 @Composable
 fun KakaoMapView(
     modifier: Modifier = Modifier,
-    onMapReady: (KakaoMap) -> Unit = {}
+    onMapDestroy: () -> Unit = {},
+    onMapReady: (KakaoMap) -> Unit = {},
+    onMapError: (Exception) -> Unit = {},
+    initialPosition: LatLng = LatLng.from(37.406960, 127.115587),
+    initialZoomLevel: Int = 15,
+    onResume: () -> Unit = {},
+    onPause: () -> Unit = {}
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
@@ -36,9 +42,11 @@ fun KakaoMapView(
                     object : MapLifeCycleCallback() {
                         override fun onMapDestroy() {
                             // 지도 api가 정상적으로 종료될 때 호출
+                            onMapDestroy()
                         }
 
                         override fun onMapError(error: Exception) {
+                            onMapError(error)
                             // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
                             Log.e("KakaoMapView", "Map Error: ${error.message}")
                             error.printStackTrace()
@@ -94,12 +102,12 @@ fun KakaoMapView(
 
                         override fun getPosition(): LatLng {
                             // 지도 시작 시 위치 좌표를 설정
-                            return LatLng.from(37.406960, 127.115587)
+                            return initialPosition
                         }
 
                         override fun getZoomLevel(): Int {
                             // 지도 시작 시 확대/축소 줌 레벨 설정
-                            return 15
+                            return initialZoomLevel
                         }
                     }
                 )
@@ -113,10 +121,12 @@ fun KakaoMapView(
         val observer = object : DefaultLifecycleObserver {
             override fun onResume(owner: LifecycleOwner) {
                 mapView?.resume()
+                onResume()
             }
 
             override fun onPause(owner: LifecycleOwner) {
                 mapView?.pause()
+                onPause()
             }
         }
 
