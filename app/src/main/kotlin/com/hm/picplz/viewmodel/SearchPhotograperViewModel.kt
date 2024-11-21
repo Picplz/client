@@ -58,14 +58,17 @@ class SearchPhotographerViewModel: ViewModel() {
 
         val labelStyles = LabelStyles.from(
             "photographerLabel",
-            LabelStyle.from(R.drawable.marker).setZoomLevel(8),
-            LabelStyle.from(R.drawable.marker).setZoomLevel(11),
-            LabelStyle.from(R.drawable.marker)
-                .setTextStyles(
-                    24,
-                    MainThemeColor.Black.toArgb()
-                )
+            LabelStyle.from(R.drawable.phone_marker)
+                .setZoomLevel(8)
+                .setApplyDpScale(true)
+                .setAnchorPoint(0.5f, 1.0f),
+            LabelStyle.from(R.drawable.phone_marker)
+                .setZoomLevel(11)
+                .setApplyDpScale(true),
+            LabelStyle.from(R.drawable.phone_marker)
                 .setZoomLevel(15)
+                .setApplyDpScale(true)
+                .setTextStyles(24, MainThemeColor.Black.toArgb())
         )
 
         val photographerLocations = listOf(
