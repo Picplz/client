@@ -7,11 +7,15 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -102,32 +106,54 @@ fun SearchPhotographerScreen(
             Box(
                 modifier = Modifier.weight(1f)
             ) {
-                KakaoMapView(
-                    onMapReady = { kakaoMap ->
-                        viewModel.displayLabelsOnMap(kakaoMap)
-                        viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
-                    },
-                    onCameraMoveEnd = {_, cameraPosition, _ ->
-                        viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
-                    },
-                    initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587)
-                )
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MainThemeColor.White,
-                ) {
-                    Text(
-                        text = currentState.address ?: "",
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp,
-                            vertical = 8.dp
-                        ),
-                        color = MainThemeColor.Black,
-                        style = MaterialTheme.typography.bodyMedium
+                if (currentState.isFetchingGPS && currentState.userLocation == null) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = MainThemeColor.Black
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "위치 정보 로딩",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MainThemeColor.Black
+                            )
+                        }
+                    }
+                } else {
+                    KakaoMapView(
+                        onMapReady = { kakaoMap ->
+                            viewModel.displayLabelsOnMap(kakaoMap)
+                            viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
+                        },
+                        onCameraMoveEnd = {_, cameraPosition, _ ->
+                            viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
+                        },
+                        initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587)
                     )
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MainThemeColor.White,
+                    ) {
+                        Text(
+                            text = currentState.address ?: "",
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp
+                            ),
+                            color = MainThemeColor.Black,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }
