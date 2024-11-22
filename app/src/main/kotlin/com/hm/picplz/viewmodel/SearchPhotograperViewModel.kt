@@ -26,10 +26,16 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
+import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 class SearchPhotographerViewModel: ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
+
+    private val _sideEffect = MutableSharedFlow<SearchPhotographerSideEffect>()
+    val sideEffect: SharedFlow<SearchPhotographerSideEffect> get() = _sideEffect
 
     private val kakaoSource = KakaoMapSource()
 
@@ -38,6 +44,11 @@ class SearchPhotographerViewModel: ViewModel() {
 
     fun handleIntent(intent: SearchPhotographerIntent) {
         when (intent) {
+            is SearchPhotographerIntent.NavigateToPrev -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(SearchPhotographerSideEffect.NavigateToPrev)
+                }
+            }
             is SearchPhotographerIntent.SetAddress -> {
                 _state.update { it.copy(address = intent.address) }
             }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.kakao.vectormap.LatLng
 
 sealed class SearchPhotographerIntent {
+    data object NavigateToPrev : SearchPhotographerIntent()
     data class SetAddress(val address: String) : SearchPhotographerIntent()
     data class GetAddress(val Coords: LatLng) : SearchPhotographerIntent()
     data class SetCenterCoords(val centerCoords: LatLng) : SearchPhotographerIntent()

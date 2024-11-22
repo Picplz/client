@@ -37,6 +37,7 @@ import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import com.kakao.vectormap.LatLng
+import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -101,7 +102,9 @@ fun SearchPhotographerScreen(
         ) {
             CommonTopBar(
                 text = "내 주변 작가 찾기",
-                onClickBack = {}
+                onClickBack = {
+                    viewModel.handleIntent(SearchPhotographerIntent.NavigateToPrev)
+                }
             )
             Box(
                 modifier = Modifier.weight(1f)
@@ -157,7 +160,15 @@ fun SearchPhotographerScreen(
                 }
             }
         }
-
+    }
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collectLatest { sideEffect ->
+            when (sideEffect) {
+                is SearchPhotographerSideEffect.NavigateToPrev -> {
+                    mainNavController.popBackStack()
+                }
+            }
+        }
     }
 }
 
