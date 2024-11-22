@@ -1,7 +1,10 @@
 package com.hm.picplz.viewmodel
 
+import android.content.Context
+import android.location.LocationManager
 import android.util.Log
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hm.picplz.R
@@ -20,12 +23,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.LocationListener
 
 class SearchPhotographerViewModel: ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
 
     private val kakaoSource = KakaoMapSource()
+
+    private var locationManager: LocationManager? = null
+    private val locationListeners = mutableListOf<LocationListener>()
 
     fun handleIntent(intent: SearchPhotographerIntent) {
         when (intent) {
@@ -49,6 +58,69 @@ class SearchPhotographerViewModel: ViewModel() {
             is SearchPhotographerIntent.SetCenterCoords -> {
                 _state.update { it.copy(centerCoords = intent.centerCoords) }
                 handleIntent(SearchPhotographerIntent.GetAddress(intent.centerCoords))
+            }
+            is SearchPhotographerIntent.SetCurrentLocation -> {
+                _state.update { it.copy(userLocation = intent.location) }
+            }
+            is SearchPhotographerIntent.GetCurrentLocation -> {
+                if (locationManager == null) {
+                    locationManager = intent.context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                }
+
+                if (ActivityCompat.checkSelfPermission(
+                    intent.context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(
+                        intent.context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) return
+
+                val gpsProvider = LocationManager.GPS_PROVIDER
+                val networkProvider = LocationManager.NETWORK_PROVIDER
+
+                if (locationManager!!.isProviderEnabled(gpsProvider)) {
+                    locationManager!!.requestLocationUpdates(
+                        gpsProvider,
+                        1000L,
+                        1.0f,
+                    ) { location ->
+                        handleIntent(SearchPhotographerIntent.SetCurrentLocation(
+                            LatLng.from(location.latitude, location.longitude)
+                        ))
+                    }
+                    if (state.value.userLocation == null) {
+                        val lastGpsLocation = locationManager?.getLastKnownLocation(gpsProvider)
+                        if (lastGpsLocation != null) {
+                            handleIntent(SearchPhotographerIntent.SetCurrentLocation(
+                                LatLng.from(lastGpsLocation.latitude, lastGpsLocation.longitude)
+                            ))
+                        }
+                    }
+                } else if (locationManager!!.isProviderEnabled(networkProvider)) {
+                    if (state.value.userLocation == null) {
+                        locationManager!!.requestLocationUpdates(
+                            networkProvider,
+                            1000L,
+                            1.0f,
+                        ) { location ->
+                            handleIntent(
+                                SearchPhotographerIntent.SetCurrentLocation(
+                                    LatLng.from(location.latitude, location.longitude)
+                                )
+                            )
+                        }
+                    }
+                    if (state.value.userLocation == null) {
+                        val lastNetworkLocation = locationManager?.getLastKnownLocation(networkProvider)
+                        if (lastNetworkLocation != null) {
+                            handleIntent(SearchPhotographerIntent.SetCurrentLocation(
+                                LatLng.from(lastNetworkLocation.latitude, lastNetworkLocation.longitude)
+                            ))
+                        }
+                    }
+                }
             }
         }
     }
@@ -86,5 +158,13 @@ class SearchPhotographerViewModel: ViewModel() {
             val layer = labelManager?.layer
             layer?.addLabel(options)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        locationListeners.forEach { listener ->
+            locationManager?.removeUpdates(listener)
+        }
+        locationListeners.clear()
     }
 }
