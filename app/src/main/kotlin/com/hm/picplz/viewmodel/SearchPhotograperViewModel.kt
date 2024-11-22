@@ -148,7 +148,11 @@ class SearchPhotographerViewModel: ViewModel() {
 
         val photographerLocations = listOf(
             LatLng.from(37.406960, 127.115587),
-            LatLng.from(37.408960, 127.117587)
+            LatLng.from(37.408960, 127.117587),
+            LatLng.from(37.384921, 127.125171),
+            LatLng.from(37.339832, 127.109160),
+            LatLng.from(37.340521, 127.108872),
+            LatLng.from(37.339245, 127.109876),
         )
 
         val styles = labelManager?.addLabelStyles(labelStyles)
