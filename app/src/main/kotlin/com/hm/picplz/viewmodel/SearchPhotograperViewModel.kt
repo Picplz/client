@@ -146,6 +146,10 @@ class SearchPhotographerViewModel: ViewModel() {
                 .setTextStyles(24, MainThemeColor.Black.toArgb())
         )
 
+        /**
+         * 더미 데이터
+         * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
+         * **/
         val photographerLocations = listOf(
             LatLng.from(37.406960, 127.115587),
             LatLng.from(37.408960, 127.117587),

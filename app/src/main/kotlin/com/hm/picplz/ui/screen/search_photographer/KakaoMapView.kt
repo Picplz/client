@@ -42,13 +42,11 @@ fun KakaoMapView(
                 start(
                     object : MapLifeCycleCallback() {
                         override fun onMapDestroy() {
-                            // 지도 api가 정상적으로 종료될 때 호출
                             onMapDestroy()
                         }
 
                         override fun onMapError(error: Exception) {
                             onMapError(error)
-                            // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
                             Log.e("KakaoMapView", "Map Error: ${error.message}")
                             error.printStackTrace()
                             if (error is MapAuthException) {
@@ -95,7 +93,6 @@ fun KakaoMapView(
                     },
                     object : KakaoMapReadyCallback() {
                         override fun onMapReady(kakaoMap: KakaoMap) {
-                            // 인증 후 API가 정상적으로 실행될 때 호출됨
                             onMapReady(kakaoMap)
                             kakaoMap.setOnCameraMoveEndListener { cameraListenerKakaoMap, cameraPosition, gestureType ->
                                 onCameraMoveEnd(
@@ -106,12 +103,10 @@ fun KakaoMapView(
                             }
                         }
                         override fun getPosition(): LatLng {
-                            // 지도 시작 시 위치 좌표를 설정
                             return initialPosition
                         }
 
                         override fun getZoomLevel(): Int {
-                            // 지도 시작 시 확대/축소 줌 레벨 설정
                             return initialZoomLevel
                         }
                     }
