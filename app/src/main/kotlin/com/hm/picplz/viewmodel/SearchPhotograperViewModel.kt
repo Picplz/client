@@ -60,7 +60,10 @@ class SearchPhotographerViewModel: ViewModel() {
                 handleIntent(SearchPhotographerIntent.GetAddress(intent.centerCoords))
             }
             is SearchPhotographerIntent.SetCurrentLocation -> {
-                _state.update { it.copy(userLocation = intent.location) }
+                _state.update { it.copy(
+                    userLocation = intent.location,
+                    isFetchingGPS = false
+                ) }
             }
             is SearchPhotographerIntent.GetCurrentLocation -> {
                 if (locationManager == null) {
