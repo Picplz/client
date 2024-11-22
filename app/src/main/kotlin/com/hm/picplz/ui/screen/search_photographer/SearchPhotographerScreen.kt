@@ -1,6 +1,11 @@
 package com.hm.picplz.ui.screen.search_photographer
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +17,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -35,8 +42,48 @@ fun SearchPhotographerScreen(
     mainNavController: NavHostController,
 ) {
     val context = LocalContext.current
-
     val currentState = viewModel.state.collectAsState().value
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
+                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                viewModel.handleIntent(SearchPhotographerIntent.GetCurrentLocation(context))
+            }
+            else -> {
+                Toast.makeText(
+                    context,
+                    "위치 권한이 필요합니다",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                viewModel.handleIntent(SearchPhotographerIntent.GetCurrentLocation(context))
+            }
+            else -> {
+                launcher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
+        }
+    }
 
     Scaffold (
         modifier = Modifier
@@ -62,7 +109,8 @@ fun SearchPhotographerScreen(
                     },
                     onCameraMoveEnd = {_, cameraPosition, _ ->
                         viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
-                    }
+                    },
+                    initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587)
                 )
                 Surface(
                     modifier = Modifier
