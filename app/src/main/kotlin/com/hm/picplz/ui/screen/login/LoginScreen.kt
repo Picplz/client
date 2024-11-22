@@ -190,6 +190,25 @@ fun LoginScreen(
                                 )
                             }
                         }
+                        // 테스트용 임시 버튼
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            onClick = { navController.navigate("search-photographer") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 15.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MainThemeColor.Black,
+                                contentColor = MainThemeColor.White
+                            ),
+                            shape = RoundedCornerShape(5.dp)
+                        ) {
+                            Text(
+                                text = "지도 기능 테스트",
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                style = buttonText
+                            )
+                        }
                     }
                 }
             }

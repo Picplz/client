@@ -25,7 +25,7 @@ fun MainNavHost(
 ) {
     val startDestination = when (uiState) {
         is MainActivityUiState.Success -> "main"
-        else -> "search-photographer"
+        else -> "login"
     }
 
     NavHost(
