@@ -29,7 +29,6 @@ import android.location.LocationListener
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -164,7 +163,7 @@ class SearchPhotographerViewModel: ViewModel() {
                     .setTextStyles(24, MainThemeColor.Black.toArgb())
             )
 
-            val centerCoord = _state.value.centerCoords ?: return@launch
+            val centerCoord = _state.value.centerCoords
 
             /**
              * 더미 데이터
