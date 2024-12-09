@@ -146,45 +146,56 @@ class SearchPhotographerViewModel: ViewModel() {
     }
 
     fun displayLabelsOnMap(kakaoMap: KakaoMap) {
-        val labelManager = kakaoMap.labelManager
+        viewModelScope.launch {
+            val labelManager = kakaoMap.labelManager
 
-        val labelStyles = LabelStyles.from(
-            "photographerLabel",
-            LabelStyle.from(R.drawable.phone_marker)
-                .setZoomLevel(8)
-                .setApplyDpScale(true)
-                .setAnchorPoint(0.5f, 1.0f),
-            LabelStyle.from(R.drawable.phone_marker)
-                .setZoomLevel(11)
-                .setApplyDpScale(true),
-            LabelStyle.from(R.drawable.phone_marker)
-                .setZoomLevel(15)
-                .setApplyDpScale(true)
-                .setTextStyles(24, MainThemeColor.Black.toArgb())
-        )
+            val labelStyles = LabelStyles.from(
+                "photographerLabel",
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(8)
+                    .setApplyDpScale(true)
+                    .setAnchorPoint(0.5f, 1.0f),
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(11)
+                    .setApplyDpScale(true),
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(15)
+                    .setApplyDpScale(true)
+                    .setTextStyles(24, MainThemeColor.Black.toArgb())
+            )
 
-        /**
-         * 더미 데이터
-         * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
-         * **/
-        val photographerLocations = listOf(
-            LatLng.from(37.406960, 127.115587),
-            LatLng.from(37.408960, 127.117587),
-            LatLng.from(37.384921, 127.125171),
-            LatLng.from(37.339832, 127.109160),
-            LatLng.from(37.340521, 127.108872),
-            LatLng.from(37.339245, 127.109876),
-        )
+            val currentLocation = _state.value.userLocation ?: return@launch
 
-        val styles = labelManager?.addLabelStyles(labelStyles)
-        val texts = LabelTextBuilder().setTexts("작가")
+            /**
+             * 더미 데이터
+             * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
+             * **/
+            val photographerLocations = listOf(
+                LatLng.from(37.406960, 127.115587),
+                LatLng.from(37.408960, 127.117587),
+                LatLng.from(37.384921, 127.125171),
+                LatLng.from(37.339832, 127.109160),
+                LatLng.from(37.340521, 127.108872),
+                LatLng.from(37.339245, 127.109876),
+            )
+            val distanceLimit =3
+            val nearbyPhotographers = photographerLocations.filter { photographerLocation ->
+                val distance = getDistance(currentLocation, photographerLocation )
+                distance <= distanceLimit
+            }
 
-        photographerLocations.forEach { location ->
-            val options = LabelOptions.from(location)
-                .setStyles(styles)
-                .setTexts(texts)
-            val layer = labelManager?.layer
-            layer?.addLabel(options)
+            kakaoMap.labelManager?.layer?.removeAll()
+
+            val styles = labelManager?.addLabelStyles(labelStyles)
+            val texts = LabelTextBuilder().setTexts("작가")
+
+            nearbyPhotographers.forEach { location ->
+                val options = LabelOptions.from(location)
+                    .setStyles(styles)
+                    .setTexts(texts)
+                val layer = labelManager?.layer
+                layer?.addLabel(options)
+            }
         }
     }
 
