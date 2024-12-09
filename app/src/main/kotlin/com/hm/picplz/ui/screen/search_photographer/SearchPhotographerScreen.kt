@@ -141,6 +141,7 @@ fun SearchPhotographerScreen(
                         },
                         initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587),
                         isZoomEnable = false,
+                        isRotateEnable = false,
                     )
                     Surface(
                         modifier = Modifier
