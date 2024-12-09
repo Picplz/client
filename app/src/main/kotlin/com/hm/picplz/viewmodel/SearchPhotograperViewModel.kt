@@ -178,7 +178,7 @@ class SearchPhotographerViewModel: ViewModel() {
                 LatLng.from(37.339245, 127.109876),
             )
 
-            val distanceLimit = 3
+            val distanceLimit = 2
             val nearbyPhotographers = photographerLocations.filter { photographerLocation ->
                 val distance = getDistance(centerCoord, photographerLocation )
                 distance <= distanceLimit
