@@ -135,8 +135,9 @@ fun SearchPhotographerScreen(
                             viewModel.displayLabelsOnMap(kakaoMap)
                             viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
                         },
-                        onCameraMoveEnd = {_, cameraPosition, _ ->
+                        onCameraMoveEnd = {kakaoMap, cameraPosition, _ ->
                             viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
+                            viewModel.displayLabelsOnMap(kakaoMap)
                         },
                         initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587)
                     )
