@@ -164,7 +164,7 @@ class SearchPhotographerViewModel: ViewModel() {
                     .setTextStyles(24, MainThemeColor.Black.toArgb())
             )
 
-            val currentLocation = _state.value.userLocation ?: return@launch
+            val centerCoord = _state.value.centerCoords ?: return@launch
 
             /**
              * 더미 데이터
@@ -178,9 +178,10 @@ class SearchPhotographerViewModel: ViewModel() {
                 LatLng.from(37.340521, 127.108872),
                 LatLng.from(37.339245, 127.109876),
             )
-            val distanceLimit =3
+
+            val distanceLimit = 3
             val nearbyPhotographers = photographerLocations.filter { photographerLocation ->
-                val distance = getDistance(currentLocation, photographerLocation )
+                val distance = getDistance(centerCoord, photographerLocation )
                 distance <= distanceLimit
             }
 
