@@ -29,6 +29,12 @@ import android.location.LocationListener
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class SearchPhotographerViewModel: ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
@@ -188,5 +194,19 @@ class SearchPhotographerViewModel: ViewModel() {
             locationManager?.removeUpdates(listener)
         }
         locationListeners.clear()
+    }
+
+    private fun getDistance(location1: LatLng, location2: LatLng): Double {
+        val earthRadius = 6371
+        val deltaLat = Math.toRadians(location2.latitude - location1.latitude)
+        val deltaLng = Math.toRadians(location2.longitude - location1.longitude)
+
+        val haversine = sin(deltaLat/2).pow(2) +
+                cos(Math.toRadians(location1.latitude)) *
+                cos(Math.toRadians(location2.latitude)) *
+                sin(deltaLng/2).pow(2)
+
+        val angularDistance = 2 * atan2(sqrt(haversine), sqrt(1-haversine))
+        return earthRadius * angularDistance
     }
 }
