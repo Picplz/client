@@ -29,6 +29,7 @@ fun KakaoMapView(
     onPause: () -> Unit = {},
     onCameraMoveEnd: (KakaoMap, CameraPosition, GestureType) -> Unit = { _: KakaoMap, _: CameraPosition, _: GestureType -> },
     isZoomEnable: Boolean = true,
+    isRotateEnable: Boolean = true,
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
@@ -103,6 +104,7 @@ fun KakaoMapView(
                                 )
                             }
                             kakaoMap.setGestureEnable(GestureType.Zoom, isZoomEnable)
+                            kakaoMap.setGestureEnable(GestureType.Rotate, isRotateEnable)
                         }
                         override fun getPosition(): LatLng {
                             return initialPosition
