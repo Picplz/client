@@ -139,7 +139,8 @@ fun SearchPhotographerScreen(
                             viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
                             viewModel.displayLabelsOnMap(kakaoMap)
                         },
-                        initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587)
+                        initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587),
+                        isZoomEnable = false,
                     )
                     Surface(
                         modifier = Modifier

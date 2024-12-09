@@ -28,7 +28,7 @@ fun KakaoMapView(
     onResume: () -> Unit = {},
     onPause: () -> Unit = {},
     onCameraMoveEnd: (KakaoMap, CameraPosition, GestureType) -> Unit = { _: KakaoMap, _: CameraPosition, _: GestureType -> },
-    isZoomEnable: Boolean = false,
+    isZoomEnable: Boolean = true,
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
