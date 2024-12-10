@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
+import com.hm.picplz.data.model.Photographer
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -148,48 +149,52 @@ class SearchPhotographerViewModel: ViewModel() {
         viewModelScope.launch {
             val labelManager = kakaoMap.labelManager
 
-            val labelStyles = LabelStyles.from(
-                "photographerLabel",
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(8)
-                    .setApplyDpScale(true)
-                    .setAnchorPoint(0.5f, 1.0f),
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(11)
-                    .setApplyDpScale(true),
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(15)
-                    .setApplyDpScale(true)
-                    .setTextStyles(24, MainThemeColor.Black.toArgb())
-            )
-
             val centerCoord = _state.value.centerCoords
 
             /**
              * 더미 데이터
              * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
              * **/
-            val photographerLocations = listOf(
-                LatLng.from(37.406960, 127.115587),
-                LatLng.from(37.408960, 127.117587),
-                LatLng.from(37.384921, 127.125171),
-                LatLng.from(37.339832, 127.109160),
-                LatLng.from(37.340521, 127.108872),
-                LatLng.from(37.339245, 127.109876),
-            )
 
+            val photographers = listOf(
+                Photographer("작가1", LatLng.from(37.406960, 127.115587)),
+                Photographer("작가2", LatLng.from(37.408960, 127.117587)),
+                Photographer("작가3", LatLng.from(37.384921, 127.125171)),
+                Photographer("작가4", LatLng.from(37.339832, 127.109160)),
+                Photographer("작가5", LatLng.from(37.340521, 127.108872)),
+                Photographer("작가6", LatLng.from(37.339245, 127.109876)),
+            )
             val distanceLimit = 2
-            val nearbyPhotographers = photographerLocations.filter { photographerLocation ->
-                val distance = getDistance(centerCoord, photographerLocation )
+            val nearbyPhotographers = photographers.filter { (_, location) ->
+                val distance = getDistance(centerCoord, location)
                 distance <= distanceLimit
             }
 
             kakaoMap.labelManager?.layer?.removeAll()
 
-            val styles = labelManager?.addLabelStyles(labelStyles)
-            val texts = LabelTextBuilder().setTexts("작가")
+            val labelStyles = LabelStyles.from(
+                "photographerLabel",
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(8)
+                    .setApplyDpScale(true)
+                    .setAnchorPoint(0.5f, 1.0f)
+                    .setTextStyles(24, MainThemeColor.Black.toArgb())
+                ,
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(11)
+                    .setApplyDpScale(true)
+                    .setTextStyles(24, MainThemeColor.Black.toArgb())
+                ,
+                LabelStyle.from(R.drawable.phone_marker)
+                    .setZoomLevel(15)
+                    .setApplyDpScale(true)
+                    .setTextStyles(24, MainThemeColor.Black.toArgb())
+            )
 
-            nearbyPhotographers.forEach { location ->
+            val styles = labelManager?.addLabelStyles(labelStyles)
+
+            nearbyPhotographers.forEach { (name, location) ->
+                val texts = LabelTextBuilder().setTexts(name)
                 val options = LabelOptions.from(location)
                     .setStyles(styles)
                     .setTexts(texts)
