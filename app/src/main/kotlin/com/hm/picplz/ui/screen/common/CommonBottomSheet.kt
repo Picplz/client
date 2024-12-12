@@ -1,35 +1,45 @@
 package com.hm.picplz.ui.screen.common
 
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun CommonBottomSheetScaffold(
+@Composable
+fun CommonBottomSheet(
     modifier: Modifier = Modifier,
-    sheetContent: @Composable ColumnScope.() -> Unit,
-    sheetPeekHeight: Float = 64f,
-    sheetShape: Shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-    content: @Composable (PaddingValues) -> Unit,
+    onDismissRequest: () -> Unit,
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    showDragHandle: Boolean = true,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    content: @Composable ColumnScope.() -> Unit
 ) {
-    val scaffoldState = rememberBottomSheetScaffoldState()
-    
-    BottomSheetScaffold(
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
         modifier = modifier,
-        scaffoldState = scaffoldState,
-        sheetContent = {
-            sheetContent()
-        },
-        sheetPeekHeight = sheetPeekHeight.dp,
-        sheetShape = sheetShape,
-        content =  content,
-    )
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        containerColor = containerColor,
+        dragHandle = if (showDragHandle) {
+            {
+                Spacer(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .width(32.dp)
+                        .height(4.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(2.dp)
+                        )
+                )
+            }
+        } else null
+    ) {
+        content()
+    }
 }
