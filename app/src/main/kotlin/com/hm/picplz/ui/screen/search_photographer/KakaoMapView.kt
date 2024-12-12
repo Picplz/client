@@ -28,8 +28,16 @@ fun KakaoMapView(
     onResume: () -> Unit = {},
     onPause: () -> Unit = {},
     onCameraMoveEnd: (KakaoMap, CameraPosition, GestureType) -> Unit = { _: KakaoMap, _: CameraPosition, _: GestureType -> },
-    isZoomEnable: Boolean = true,
-    isRotateEnable: Boolean = true,
+    isGestureEnabled: Boolean = true,
+    isOneFingerDoubleTapEnable: Boolean? = null,
+    isTwoFingerSingleTapEnable: Boolean? = null,
+    isPanEnable: Boolean? = null,
+    isRotateEnable: Boolean? = null,
+    isZoomEnable: Boolean? = null,
+    isTiltEnable: Boolean? = null,
+    isLongTapAndDragEnable: Boolean? = null,
+    isRotateZoomEnable: Boolean? = null,
+    isOneFingerZoomEnable: Boolean? = null,
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
@@ -96,15 +104,24 @@ fun KakaoMapView(
                     object : KakaoMapReadyCallback() {
                         override fun onMapReady(kakaoMap: KakaoMap) {
                             onMapReady(kakaoMap)
-                            kakaoMap.setOnCameraMoveEndListener { cameraListenerKakaoMap, cameraPosition, gestureType ->
-                                onCameraMoveEnd(
-                                    cameraListenerKakaoMap,
-                                    cameraPosition,
-                                    gestureType
-                                )
+                            kakaoMap.apply {
+                                setOnCameraMoveEndListener { cameraListenerKakaoMap, cameraPosition, gestureType ->
+                                    onCameraMoveEnd(
+                                        cameraListenerKakaoMap,
+                                        cameraPosition,
+                                        gestureType
+                                    )
+                                }
+                                setGestureEnable(GestureType.OneFingerDoubleTap, isOneFingerDoubleTapEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.TwoFingerSingleTap, isTwoFingerSingleTapEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.Pan, isPanEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.Rotate, isRotateEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.Zoom, isZoomEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.Tilt, isTiltEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.LongTapAndDrag, isLongTapAndDragEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.RotateZoom, isRotateZoomEnable ?: isGestureEnabled)
+                                setGestureEnable(GestureType.OneFingerZoom, isOneFingerZoomEnable ?: isGestureEnabled)
                             }
-                            kakaoMap.setGestureEnable(GestureType.Zoom, isZoomEnable)
-                            kakaoMap.setGestureEnable(GestureType.Rotate, isRotateEnable)
                         }
                         override fun getPosition(): LatLng {
                             return initialPosition
