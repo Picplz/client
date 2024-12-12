@@ -37,6 +37,7 @@ import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapOverlay
 import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -134,6 +135,13 @@ fun SearchPhotographerScreen(
                         onMapReady = { kakaoMap ->
                             viewModel.displayLabelsOnMap(kakaoMap)
                             viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
+
+                            kakaoMap.hideOverlay(MapOverlay.ROADVIEW_LINE)
+                            kakaoMap.hideOverlay(MapOverlay.HILLSHADING)
+                            kakaoMap.hideOverlay(MapOverlay.BICYCLE_ROAD)
+                            kakaoMap.hideOverlay(MapOverlay.SKYVIEW_HYBRID)
+                            kakaoMap.isPoiVisible = false
+
                         },
                         onCameraMoveEnd = {kakaoMap, cameraPosition, _ ->
                             viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
