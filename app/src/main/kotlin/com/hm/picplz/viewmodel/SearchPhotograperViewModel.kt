@@ -149,8 +149,6 @@ class SearchPhotographerViewModel: ViewModel() {
         viewModelScope.launch {
             val labelManager = kakaoMap.labelManager
 
-            val centerCoord = _state.value.centerCoords
-
             /**
              * 더미 데이터
              * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
@@ -164,7 +162,10 @@ class SearchPhotographerViewModel: ViewModel() {
                 Photographer("작가5", LatLng.from(37.340521, 127.108872)),
                 Photographer("작가6", LatLng.from(37.339245, 127.109876)),
             )
+
+            val centerCoord = state.value.centerCoords
             val distanceLimit = 2
+
             val nearbyPhotographers = photographers.filter { (_, location) ->
                 val distance = getDistance(centerCoord, location)
                 distance <= distanceLimit
