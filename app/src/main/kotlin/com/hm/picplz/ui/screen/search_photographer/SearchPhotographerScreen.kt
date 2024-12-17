@@ -152,7 +152,38 @@ fun SearchPhotographerScreen(
                         }
                     }
                 } else {
-
+                    Row (
+                        modifier = modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(160.dp)
+                                .padding(top = 16.dp)
+                                .background(
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(50.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = currentState.address ?: "마포구 서교동",
+                                modifier = Modifier.padding(
+                                    horizontal = 16.dp,
+                                    vertical = 8.dp
+                                ),
+                                color = MainThemeColor.White,
+                                style = TextStyle(
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.sp,
+                                    lineHeight = 16.sp * 1.4,
+                                    letterSpacing = 0.sp
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
