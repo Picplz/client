@@ -1,5 +1,6 @@
 package com.hm.picplz.ui.screen.search_photographer
 
+import PhotographerListScreen
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -7,37 +8,42 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.hm.picplz.ui.screen.common.CommonTopBar
+import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
+import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
-import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.MapOverlay
 import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -46,6 +52,7 @@ fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchPhotographerViewModel = viewModel(),
     mainNavController: NavHostController,
+    tempView: Boolean = false  // 개발용 임시 파라미터
 ) {
     val context = LocalContext.current
     val currentState = viewModel.state.collectAsState().value
@@ -91,26 +98,40 @@ fun SearchPhotographerScreen(
         }
     }
 
-    Scaffold (
+    CommonBottomSheetScaffold (
         modifier = Modifier
             .fillMaxSize(),
-        containerColor = MainThemeColor.White
-    ){ innerPadding ->
+        sheetContent = {
+            PhotographerListScreen()
+        },
+    ){
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .background(MainThemeColor.White),
         ) {
-            CommonTopBar(
-                text = "내 주변 작가 찾기",
-                onClickBack = {
-                    viewModel.handleIntent(SearchPhotographerIntent.NavigateToPrev)
-                }
-            )
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .height(45.dp)
+                    .padding(start = 15.dp),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "내 주변 작가 찾기",
+                    style = TextStyle(
+                        fontFamily = Pretendard,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 16.sp * 1.4,
+                        letterSpacing = 0.sp
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
-                if (currentState.isFetchingGPS && currentState.userLocation == null) {
+                if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -131,43 +152,7 @@ fun SearchPhotographerScreen(
                         }
                     }
                 } else {
-                    KakaoMapView(
-                        onMapReady = { kakaoMap ->
-                            viewModel.displayLabelsOnMap(kakaoMap)
-                            viewModel.handleIntent(SearchPhotographerIntent.GetAddress(LatLng.from(37.406960, 127.115587)))
 
-                            kakaoMap.hideOverlay(MapOverlay.ROADVIEW_LINE)
-                            kakaoMap.hideOverlay(MapOverlay.HILLSHADING)
-                            kakaoMap.hideOverlay(MapOverlay.BICYCLE_ROAD)
-                            kakaoMap.hideOverlay(MapOverlay.SKYVIEW_HYBRID)
-                            kakaoMap.isPoiVisible = false
-
-                        },
-                        onCameraMoveEnd = {kakaoMap, cameraPosition, _ ->
-                            viewModel.handleIntent(SearchPhotographerIntent.SetCenterCoords(cameraPosition.position))
-                            viewModel.displayLabelsOnMap(kakaoMap)
-                        },
-                        initialPosition = currentState.userLocation ?: LatLng.from(37.406960, 127.115587),
-                        isGestureEnabled = false,
-                        initialZoomLevel = 14,
-                    )
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MainThemeColor.White,
-                    ) {
-                        Text(
-                            text = currentState.address ?: "",
-                            modifier = Modifier.padding(
-                                horizontal = 16.dp,
-                                vertical = 8.dp
-                            ),
-                            color = MainThemeColor.Black,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
                 }
             }
         }
@@ -189,6 +174,9 @@ fun SearchPhotographerScreen(
 fun SearchPhotographerPreview() {
     PicplzTheme {
         val mainNavController = rememberNavController()
-        SearchPhotographerScreen(mainNavController = mainNavController)
+        SearchPhotographerScreen(
+            tempView = true,
+            mainNavController = mainNavController
+        )
     }
 }
