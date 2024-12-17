@@ -62,7 +62,9 @@ class SearchPhotographerViewModel: ViewModel() {
                 viewModelScope.launch {
                     kakaoSource.getAddressFromCoords(KaKaoAddressRequest(intent.Coords.longitude.toString(), intent.Coords.latitude.toString()))
                         .onSuccess { response ->
-                            val twoDepthRegion = response.documents.firstOrNull()?.address?.region_2depth_name ?: ""
+                            val twoDepthRegion = response.documents.firstOrNull()?.address?.region_2depth_name
+                                ?.split(" ")
+                                ?.lastOrNull() ?: ""
                             val threeDepthRegion = response.documents.firstOrNull()?.address?.region_3depth_name ?: ""
                             val address = "$twoDepthRegion $threeDepthRegion"
                             handleIntent(SearchPhotographerIntent.SetAddress(address))
@@ -81,6 +83,7 @@ class SearchPhotographerViewModel: ViewModel() {
                     userLocation = intent.location,
                     isFetchingGPS = false
                 ) }
+                handleIntent(SearchPhotographerIntent.GetAddress(intent.location))
             }
             is SearchPhotographerIntent.GetCurrentLocation -> {
                 if (locationManager == null) {
