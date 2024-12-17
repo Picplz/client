@@ -18,7 +18,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.requiredWidthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -159,7 +160,8 @@ fun SearchPhotographerScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .width(160.dp)
+                                .wrapContentWidth()
+                                .requiredWidthIn(min = 160.dp)
                                 .padding(top = 16.dp)
                                 .background(
                                     color = Color.Black,
@@ -180,7 +182,8 @@ fun SearchPhotographerScreen(
                                     fontSize = 16.sp,
                                     lineHeight = 16.sp * 1.4,
                                     letterSpacing = 0.sp
-                                )
+                                ),
+                                maxLines = 1
                             )
                         }
                     }
