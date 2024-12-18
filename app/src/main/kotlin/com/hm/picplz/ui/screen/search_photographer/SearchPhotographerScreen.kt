@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +49,7 @@ import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
+import com.hm.picplz.R
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -155,14 +159,16 @@ fun SearchPhotographerScreen(
                 } else {
                     Row (
                         modifier = modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                        ,
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .requiredWidthIn(min = 160.dp)
-                                .padding(top = 16.dp)
                                 .background(
                                     color = Color.Black,
                                     shape = RoundedCornerShape(50.dp)
@@ -184,6 +190,16 @@ fun SearchPhotographerScreen(
                                     letterSpacing = 0.sp
                                 ),
                                 maxLines = 1
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Box(
+                            modifier = Modifier,
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.mdi_restart),
+                                contentDescription = "circles"
                             )
                         }
                     }
