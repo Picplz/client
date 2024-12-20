@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -117,24 +116,8 @@ fun SearchPhotographerScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .height(45.dp)
-                    .padding(start = 15.dp),
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "내 주변 작가 찾기",
-                    style = TextStyle(
-                        fontFamily = Pretendard,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        lineHeight = 16.sp * 1.4,
-                        letterSpacing = 0.sp
-                    )
-                )
-            }
-            Box(
-                modifier = Modifier
                     .fillMaxSize()
+                    .background(color = MainThemeColor.Gray1)
             ) {
                 if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
                     Box(
@@ -160,33 +143,33 @@ fun SearchPhotographerScreen(
                     Row (
                         modifier = modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
+                            .padding(top = 16.dp, start = 15.dp, end = 15.dp)
                         ,
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier
-                                .wrapContentWidth()
-                                .requiredWidthIn(min = 160.dp)
-                                .background(
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(50.dp)
+                                .padding(
+                                    horizontal = 15.dp,
                                 ),
-                            contentAlignment = Alignment.Center
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.marker_map),
+                                contentDescription = "지도 표시 마커"
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = currentState.address ?: "마포구 서교동",
-                                modifier = Modifier.padding(
-                                    horizontal = 16.dp,
-                                    vertical = 8.dp
-                                ),
-                                color = MainThemeColor.White,
+                                modifier = Modifier,
+                                color = MainThemeColor.Black,
                                 style = TextStyle(
                                     fontFamily = Pretendard,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.sp,
-                                    lineHeight = 16.sp * 1.4,
+                                    fontSize = 18.sp,
+                                    lineHeight = 18.sp * 1.4,
                                     letterSpacing = 0.sp
                                 ),
                                 maxLines = 1
@@ -194,13 +177,45 @@ fun SearchPhotographerScreen(
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Box(
-                            modifier = Modifier,
+                            modifier = Modifier
+                                .background(
+                                    color = MainThemeColor.White,
+                                    shape = RoundedCornerShape(50.dp)
+                                )
+                                .border(  // 테두리 추가
+                                    width = 1.dp,
+                                    color = MainThemeColor.Gray2,
+                                    shape = RoundedCornerShape(50.dp)
+                                ),
                             contentAlignment = Alignment.Center,
+
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.mdi_restart),
-                                contentDescription = "circles"
-                            )
+                            Row (
+                                modifier = Modifier
+                                    .padding(
+                                        horizontal = 15.dp,
+                                        vertical = 6.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ){
+                                Text(
+                                    text = "내 위치 새로고침",
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                        lineHeight = 14.sp * 1.4,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    color = MainThemeColor.Gray4
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.arrow_rotate_left),
+                                    contentDescription = "circles"
+                                )
+                            }
                         }
                     }
                 }
