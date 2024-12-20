@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -86,6 +87,8 @@ fun LoginScreen(
         pageCount = { pageTexts.size }
     )
     val coroutineScope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
 
     val indicatorOffset = remember { mutableStateOf(0.dp) }
 
@@ -115,7 +118,7 @@ fun LoginScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(450.dp)
+                            .height(screenHeight * 0.65f)
                     ) {
                         Image(
                             painter = painterResource(id = imgRes),
@@ -199,7 +202,7 @@ fun LoginScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = indicatorOffset.value),
+                        .padding(top = screenHeight * 0.65f + indicatorOffset.value),
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     repeat(pagerState.pageCount) { iteration ->
