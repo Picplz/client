@@ -7,15 +7,11 @@ data class SearchPhotographerState (
     val centerCoords: LatLng = LatLng.from(37.406960, 127.115587),
     val userLocation: LatLng? = null,
     val isFetchingGPS: Boolean = true,
+    val isSearchingPhotographer: Boolean = true,
 ) {
     companion object {
         fun idle(): SearchPhotographerState {
-            return SearchPhotographerState(
-                address = null,
-                centerCoords = LatLng.from(37.406960, 127.115587),
-                userLocation = null,
-                isFetchingGPS = true,
-            )
+            return SearchPhotographerState()
         }
     }
 }
