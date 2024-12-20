@@ -145,6 +145,9 @@ class SearchPhotographerViewModel: ViewModel() {
                     }
                 }
             }
+            is SearchPhotographerIntent.SetIsSearchingPhotographer -> {
+                _state.update { it.copy(isSearchingPhotographer = intent.isSearchingPhotographer) }
+            }
         }
     }
 
