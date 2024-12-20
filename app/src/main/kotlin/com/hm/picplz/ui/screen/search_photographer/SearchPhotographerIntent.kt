@@ -1,6 +1,7 @@
 package com.hm.picplz.ui.screen.search_photographer
 
 import android.content.Context
+import com.hm.picplz.data.model.Photographer
 import com.kakao.vectormap.LatLng
 
 sealed class SearchPhotographerIntent {
@@ -10,4 +11,5 @@ sealed class SearchPhotographerIntent {
     data class SetCenterCoords(val centerCoords: LatLng) : SearchPhotographerIntent()
     data class SetCurrentLocation(val location: LatLng) : SearchPhotographerIntent()
     data class GetCurrentLocation(val context: Context) : SearchPhotographerIntent()
+    data class SetIsSearchingPhotographer(val isSearchingPhotographer: Boolean) : SearchPhotographerIntent()
 }
