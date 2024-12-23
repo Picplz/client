@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -182,7 +181,7 @@ fun SearchPhotographerScreen(
                                     color = MainThemeColor.White,
                                     shape = RoundedCornerShape(50.dp)
                                 )
-                                .border(  // 테두리 추가
+                                .border(
                                     width = 1.dp,
                                     color = MainThemeColor.Gray2,
                                     shape = RoundedCornerShape(50.dp)
@@ -217,6 +216,20 @@ fun SearchPhotographerScreen(
                                 )
                             }
                         }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.circles),
+                            contentDescription = "범위 지정 이미지"
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.center_char),
+                            contentDescription = "작가 탐색 중앙 캐릭터"
+                        )
                     }
                 }
             }
