@@ -12,4 +12,5 @@ sealed class SearchPhotographerIntent {
     data class SetCurrentLocation(val location: LatLng) : SearchPhotographerIntent()
     data class GetCurrentLocation(val context: Context) : SearchPhotographerIntent()
     data class SetIsSearchingPhotographer(val isSearchingPhotographer: Boolean) : SearchPhotographerIntent()
+    data class SetNearbyPhotographers(val photographers : List<Photographer>) : SearchPhotographerIntent()
 }
