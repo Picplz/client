@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -83,6 +87,10 @@ fun LoginScreen(
         pageCount = { pageTexts.size }
     )
     val coroutineScope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+    val indicatorOffset = remember { mutableStateOf(0.dp) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -110,7 +118,7 @@ fun LoginScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(450.dp)
+                            .height(screenHeight * 0.65f)
                     ) {
                         Image(
                             painter = painterResource(id = imgRes),
@@ -129,41 +137,18 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight(Alignment.CenterVertically)
+                            .layout { measurable, constraints ->
+                                // Measure the text and update the offset
+                                val placeable = measurable.measure(constraints)
+                                indicatorOffset.value = placeable.height.toDp() + 48.dp
+                                layout(placeable.width, placeable.height) {
+                                    placeable.place(0, 0)
+                                }
+                            }
                     )
 
-                    Spacer(modifier = Modifier.height(22.dp))
-
-
-                    Row(
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        repeat(pagerState.pageCount) { iteration ->
-                            val color =
-                                if (pagerState.currentPage == iteration) MainThemeColor.Black else MainThemeColor.White
-                            Box(
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .border(1.dp, MainThemeColor.Black, CircleShape)
-                                    .size(12.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(
-                                                page = iteration,
-                                                animationSpec = tween(durationMillis = 400) // Adjust the duration as needed
-                                            )
-                                        }
-                                    }
-                            )
-                        }
-                    }
-
                     if (page == 2) {
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(66.dp))
 
                         Button(
                             onClick = { viewModel.handleIntent(LoginIntent.NavigateToKaKao) },
@@ -211,6 +196,37 @@ fun LoginScreen(
                         }
                     }
                 }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = screenHeight * 0.65f + indicatorOffset.value),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val color =
+                            if (pagerState.currentPage == iteration) MainThemeColor.Black else MainThemeColor.White
+                        Box(
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .border(1.dp, MainThemeColor.Black, CircleShape)
+                                .size(12.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(
+                                            page = iteration,
+                                            animationSpec = tween(durationMillis = 400) // Adjust the duration as needed
+                                        )
+                                    }
+                                }
+                        )
+                    }
+                }
+
             }
         }
     }
