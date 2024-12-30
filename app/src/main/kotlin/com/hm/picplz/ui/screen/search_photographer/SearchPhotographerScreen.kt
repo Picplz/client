@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
@@ -53,7 +53,7 @@ import com.hm.picplz.R
 @Composable
 fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchPhotographerViewModel = viewModel(),
+    viewModel: SearchPhotographerViewModel = hiltViewModel(),
     mainNavController: NavHostController,
     tempView: Boolean = false  // 개발용 임시 파라미터
 ) {
