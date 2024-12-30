@@ -9,7 +9,7 @@ data class Photographer (
 )
 
 
-val photographers = listOf(
+val dummyPhotographers = listOf(
     Photographer(
         name = "작가1",
         location = LatLng.from(37.406960, 127.115587),
