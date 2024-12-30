@@ -3,22 +3,14 @@ package com.hm.picplz.viewmodel
 import android.content.Context
 import android.location.LocationManager
 import android.util.Log
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hm.picplz.R
 import com.hm.picplz.data.model.KaKaoAddressRequest
 import com.hm.picplz.data.source.KakaoMapSource
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerIntent
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerState
-import com.hm.picplz.ui.theme.MainThemeColor
-import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
-import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -27,16 +19,25 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import com.hm.picplz.data.model.Photographer
+import com.hm.picplz.data.repository.PhotographerRepository
+import com.hm.picplz.data.repository.PhotographerRepositoryImpl
+import com.hm.picplz.data.source.PhotographerServiceImpl
+import com.hm.picplz.data.source.PhotographerSourceImpl
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import javax.inject.Inject
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class SearchPhotographerViewModel: ViewModel() {
+@HiltViewModel
+class SearchPhotographerViewModel @Inject constructor(
+    private val photographerRepository: PhotographerRepository
+) : ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
 
@@ -148,65 +149,24 @@ class SearchPhotographerViewModel: ViewModel() {
             is SearchPhotographerIntent.SetIsSearchingPhotographer -> {
                 _state.update { it.copy(isSearchingPhotographer = intent.isSearchingPhotographer) }
             }
-        }
-    }
-
-    fun displayLabelsOnMap(kakaoMap: KakaoMap) {
-        viewModelScope.launch {
-            val labelManager = kakaoMap.labelManager
-
-            /**
-             * 더미 데이터
-             * Todo : db에 있는 작가 데이터에서 근처 위치에 있는 데이터 정보만 필터링 해서 호출
-             * **/
-
-            val photographers = listOf(
-                Photographer("작가1", LatLng.from(37.406960, 127.115587)),
-                Photographer("작가2", LatLng.from(37.408960, 127.117587)),
-                Photographer("작가3", LatLng.from(37.384921, 127.125171)),
-                Photographer("작가4", LatLng.from(37.339832, 127.109160)),
-                Photographer("작가5", LatLng.from(37.340521, 127.108872)),
-                Photographer("작가6", LatLng.from(37.339245, 127.109876)),
-            )
-
-            val centerCoord = state.value.centerCoords
-            val distanceLimit = 2
-
-            val nearbyPhotographers = photographers.filter { (_, location) ->
-                val distance = getDistance(centerCoord, location)
-                distance <= distanceLimit
+            is SearchPhotographerIntent.SetNearbyPhotographers -> {
+                _state.update { it.copy(nearbyPhotographers = intent.photographers)}
             }
-
-            kakaoMap.labelManager?.layer?.removeAll()
-
-            val labelStyles = LabelStyles.from(
-                "photographerLabel",
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(8)
-                    .setApplyDpScale(true)
-                    .setAnchorPoint(0.5f, 1.0f)
-                    .setTextStyles(24, MainThemeColor.Black.toArgb())
-                ,
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(11)
-                    .setApplyDpScale(true)
-                    .setTextStyles(24, MainThemeColor.Black.toArgb())
-                ,
-                LabelStyle.from(R.drawable.phone_marker)
-                    .setZoomLevel(15)
-                    .setApplyDpScale(true)
-                    .setTextStyles(24, MainThemeColor.Black.toArgb())
-            )
-
-            val styles = labelManager?.addLabelStyles(labelStyles)
-
-            nearbyPhotographers.forEach { (name, location) ->
-                val texts = LabelTextBuilder().setTexts(name)
-                val options = LabelOptions.from(location)
-                    .setStyles(styles)
-                    .setTexts(texts)
-                val layer = labelManager?.layer
-                layer?.addLabel(options)
+            is SearchPhotographerIntent.FetchPhotographers,
+            is SearchPhotographerIntent.RefreshPhotographers -> {
+                viewModelScope.launch {
+                    photographerRepository.getPhotographers()
+                        .onSuccess { photographers ->
+                            val nearbyPhotographers = filteredPhotographers(photographers)
+                            _state.update { it.copy(
+                                nearbyPhotographers = nearbyPhotographers,
+                                isSearchingPhotographer = false
+                            )}
+                        }
+                        .onFailure { error ->
+                            Log.e("SearchPhotographerViewModel", "작가 목록 로딩 실패", error)
+                        }
+                }
             }
         }
     }
@@ -217,6 +177,16 @@ class SearchPhotographerViewModel: ViewModel() {
             locationManager?.removeUpdates(listener)
         }
         locationListeners.clear()
+    }
+
+    private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
+        val centerCoords = state.value.centerCoords
+        val distanceLimit = 2
+
+        return photographers.filter { (_, location, _ ) ->
+            val distance = getDistance(centerCoords, location)
+            distance <= distanceLimit
+        }
     }
 
     private fun getDistance(location1: LatLng, location2: LatLng): Double {
