@@ -44,6 +44,10 @@ class SearchPhotographerViewModel @Inject constructor(
     private val _sideEffect = MutableSharedFlow<SearchPhotographerSideEffect>()
     val sideEffect: SharedFlow<SearchPhotographerSideEffect> get() = _sideEffect
 
+    init {
+        handleIntent(SearchPhotographerIntent.FetchPhotographers)
+    }
+
     private val kakaoSource = KakaoMapSource()
 
     private var locationManager: LocationManager? = null
@@ -158,13 +162,14 @@ class SearchPhotographerViewModel @Inject constructor(
                     photographerRepository.getPhotographers()
                         .onSuccess { photographers ->
                             val nearbyPhotographers = filteredPhotographers(photographers)
+                            Log.d("FetchPhotographers","작가 목록 로딩 성공 $nearbyPhotographers")
                             _state.update { it.copy(
                                 nearbyPhotographers = nearbyPhotographers,
                                 isSearchingPhotographer = false
                             )}
                         }
                         .onFailure { error ->
-                            Log.e("SearchPhotographerViewModel", "작가 목록 로딩 실패", error)
+                            Log.e("FetchPhotographers", "작가 목록 로딩 실패", error)
                         }
                 }
             }
@@ -180,7 +185,7 @@ class SearchPhotographerViewModel @Inject constructor(
     }
 
     private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
-        val centerCoords = state.value.centerCoords
+        val centerCoords = _state.value.centerCoords
         val distanceLimit = 2
 
         return photographers.filter { (_, location, _ ) ->
