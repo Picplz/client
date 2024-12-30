@@ -48,6 +48,9 @@ import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
+import com.hm.picplz.data.model.Photographer
+import com.hm.picplz.data.model.dummyPhotographers
+import com.hm.picplz.data.repository.PhotographerRepository
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -246,15 +249,22 @@ fun SearchPhotographerScreen(
     }
 }
 
+private class DummyPhotographerRepository : PhotographerRepository {
+    override suspend fun getPhotographers(): Result<List<Photographer>> {
+        return Result.success(dummyPhotographers)
+    }
+}
+
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun SearchPhotographerPreview() {
+fun SearchPhotographerScreenPreview() {
     PicplzTheme {
-        val mainNavController = rememberNavController()
         SearchPhotographerScreen(
-            tempView = true,
-            mainNavController = mainNavController
+            modifier = Modifier,
+            viewModel = SearchPhotographerViewModel(DummyPhotographerRepository()),
+            mainNavController = rememberNavController(),
+            tempView = true
         )
     }
 }
