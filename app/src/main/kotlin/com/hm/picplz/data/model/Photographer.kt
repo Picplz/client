@@ -12,32 +12,42 @@ data class Photographer (
 val dummyPhotographers = listOf(
     Photographer(
         name = "작가1",
-        location = LatLng.from(37.406960, 127.115587),
+        location = LatLng.from(37.411960, 127.115587),
         profileImageUri = "https://picsum.photos/200"
     ),
     Photographer(
         name = "작가2",
-        location = LatLng.from(37.408960, 127.117587),
+        location = LatLng.from(37.409960, 127.119587),
         profileImageUri = "https://picsum.photos/200"
     ),
     Photographer(
         name = "작가3",
-        location = LatLng.from(37.384921, 127.125171),
+        location = LatLng.from(37.402960, 127.119587),
         profileImageUri = "https://picsum.photos/200"
     ),
     Photographer(
         name = "작가4",
-        location = LatLng.from(37.339832, 127.109160),
+        location = LatLng.from(37.397960, 127.118587),
         profileImageUri = "https://picsum.photos/200"
     ),
     Photographer(
         name = "작가5",
-        location = LatLng.from(37.340521, 127.108872),
+        location = LatLng.from(37.397960, 127.115587),
         profileImageUri = "https://picsum.photos/200"
     ),
     Photographer(
         name = "작가6",
-        location = LatLng.from(37.339245, 127.109876),
+        location = LatLng.from(37.398960, 127.111587),
+        profileImageUri = "https://picsum.photos/200"
+    ),
+    Photographer(
+        name = "작가7",
+        location = LatLng.from(37.402960, 127.111587),
+        profileImageUri = "https://picsum.photos/200"
+    ),
+    Photographer(
+        name = "작가8",
+        location = LatLng.from(37.406960, 127.112587),
         profileImageUri = "https://picsum.photos/200"
     )
 )
