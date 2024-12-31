@@ -2,9 +2,9 @@ package com.hm.picplz.ui.screen.search_photographer
 
 import PhotographerListScreen
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,23 +35,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
-import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -60,9 +57,11 @@ import com.hm.picplz.data.model.Photographer
 import com.hm.picplz.data.model.dummyPhotographers
 import com.hm.picplz.data.repository.PhotographerRepository
 import com.hm.picplz.utils.LocationUtil
+import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
 import kotlin.math.abs
 
+@SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun SearchPhotographerScreen(
@@ -255,6 +254,8 @@ fun SearchPhotographerScreen(
                                 from = dummyUserLocation,
                                 to = photographerLocation
                             )
+                            val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
+                            val formattedDistance = String.format("%.0f", distanceInMeters)
                             val screenWidthDp = LocalConfiguration.current.screenWidthDp
                             val maxRadius = screenWidthDp * 0.4f
                             val scale = maxRadius / 2f
@@ -264,12 +265,55 @@ fun SearchPhotographerScreen(
                                 contentDescription = "작가 위치",
                                 modifier = Modifier
                                     .offset(
-                                        x= (relativeX * scale).dp,
+                                        x = (relativeX * scale).dp,
                                         y = -(relativeY * scale).dp
                                     )
-                                    .size(40.dp)
+                                    .size(74.dp)
                                     .clip(CircleShape)
-                                    .border(2.dp, Color.White, CircleShape)
+                                    .border(2.dp, MainThemeColor.Black, CircleShape),
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(8.dp)
+                                    .offset(
+                                        x = (relativeX * scale).dp,
+                                        y = -(relativeY * scale).dp
+                                    ),
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .offset(
+                                        x = (relativeX * scale).dp,
+                                        y = (-(relativeY * scale)+50).dp
+                                    )
+                                    .zIndex(1f),
+                                text = name,
+                                style = TextStyle(
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                    lineHeight = 12.sp * 1.4,
+                                    letterSpacing = 0.sp
+                                ),
+                                color = MainThemeColor.Black
+
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .offset(
+                                        x = (relativeX * scale).dp,
+                                        y = (-(relativeY * scale)+63).dp
+                                    )
+                                    .zIndex(1f),
+                                text = "${formattedDistance}m",
+                                style = TextStyle(
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                    lineHeight = 124.sp * 1.4,
+                                    letterSpacing = 0.sp
+                                ),
+                                color = MainThemeColor.Gray4
                             )
                         }
                     }
