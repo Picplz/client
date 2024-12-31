@@ -257,7 +257,7 @@ fun SearchPhotographerScreen(
                             val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
                             val formattedDistance = String.format("%.0f", distanceInMeters)
                             val screenWidthDp = LocalConfiguration.current.screenWidthDp
-                            val maxRadius = screenWidthDp * 0.4f
+                            val maxRadius = screenWidthDp * 0.50f
                             val scale = maxRadius / 2f
 
                             Image(
