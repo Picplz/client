@@ -19,11 +19,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import com.hm.picplz.data.model.Photographer
+import com.hm.picplz.data.model.dummyPhotographers
 import com.hm.picplz.data.repository.PhotographerRepository
 import com.hm.picplz.data.repository.PhotographerRepositoryImpl
 import com.hm.picplz.data.source.PhotographerServiceImpl
 import com.hm.picplz.data.source.PhotographerSourceImpl
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
+import com.hm.picplz.utils.LocationUtil.getDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -162,7 +164,6 @@ class SearchPhotographerViewModel @Inject constructor(
                     photographerRepository.getPhotographers()
                         .onSuccess { photographers ->
                             val nearbyPhotographers = filteredPhotographers(photographers)
-                            Log.d("FetchPhotographers","작가 목록 로딩 성공 $nearbyPhotographers")
                             _state.update { it.copy(
                                 nearbyPhotographers = nearbyPhotographers,
                                 isSearchingPhotographer = false
@@ -185,26 +186,13 @@ class SearchPhotographerViewModel @Inject constructor(
     }
 
     private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
-        val centerCoords = _state.value.centerCoords
+//        val userLocation = _state.value.userLocation ?: return emptyList()
+        val dummyUserLocation = LatLng.from(37.402960, 127.115587)
         val distanceLimit = 2
 
         return photographers.filter { (_, location, _ ) ->
-            val distance = getDistance(centerCoords, location)
+            val distance = getDistance(dummyUserLocation, location)
             distance <= distanceLimit
         }
-    }
-
-    private fun getDistance(location1: LatLng, location2: LatLng): Double {
-        val earthRadius = 6371
-        val deltaLat = Math.toRadians(location2.latitude - location1.latitude)
-        val deltaLng = Math.toRadians(location2.longitude - location1.longitude)
-
-        val haversine = sin(deltaLat/2).pow(2) +
-                cos(Math.toRadians(location1.latitude)) *
-                cos(Math.toRadians(location2.latitude)) *
-                sin(deltaLng/2).pow(2)
-
-        val angularDistance = 2 * atan2(sqrt(haversine), sqrt(1-haversine))
-        return earthRadius * angularDistance
     }
 }

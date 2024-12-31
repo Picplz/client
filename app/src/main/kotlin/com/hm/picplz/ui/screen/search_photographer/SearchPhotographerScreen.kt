@@ -4,6 +4,7 @@ import PhotographerListScreen
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,8 +20,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +34,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +48,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
@@ -51,6 +59,9 @@ import com.hm.picplz.R
 import com.hm.picplz.data.model.Photographer
 import com.hm.picplz.data.model.dummyPhotographers
 import com.hm.picplz.data.repository.PhotographerRepository
+import com.hm.picplz.utils.LocationUtil
+import com.kakao.vectormap.LatLng
+import kotlin.math.abs
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -233,6 +244,34 @@ fun SearchPhotographerScreen(
                             painter = painterResource(id = R.drawable.center_char),
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
+                        currentState.nearbyPhotographers.forEach {  ( name, photographerLocation, profileImageUri )  ->
+//                            val userLocation = currentState.userLocation
+//                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
+//                                from = userLocation!!,
+//                                to = photographerLocation
+//                            )
+                            val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
+                                from = dummyUserLocation,
+                                to = photographerLocation
+                            )
+                            val screenWidthDp = LocalConfiguration.current.screenWidthDp
+                            val maxRadius = screenWidthDp * 0.4f
+                            val scale = maxRadius / 2f
+
+                            Image(
+                                painter = rememberAsyncImagePainter(model = profileImageUri),
+                                contentDescription = "작가 위치",
+                                modifier = Modifier
+                                    .offset(
+                                        x= (relativeX * scale).dp,
+                                        y = -(relativeY * scale).dp
+                                    )
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, Color.White, CircleShape)
+                            )
+                        }
                     }
                 }
             }
@@ -246,25 +285,5 @@ fun SearchPhotographerScreen(
                 }
             }
         }
-    }
-}
-
-private class DummyPhotographerRepository : PhotographerRepository {
-    override suspend fun getPhotographers(): Result<List<Photographer>> {
-        return Result.success(dummyPhotographers)
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Preview
-@Composable
-fun SearchPhotographerScreenPreview() {
-    PicplzTheme {
-        SearchPhotographerScreen(
-            modifier = Modifier,
-            viewModel = SearchPhotographerViewModel(DummyPhotographerRepository()),
-            mainNavController = rememberNavController(),
-            tempView = true
-        )
     }
 }
