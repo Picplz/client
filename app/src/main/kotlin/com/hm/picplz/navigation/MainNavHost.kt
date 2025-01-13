@@ -2,6 +2,7 @@ package com.hm.picplz.navigation
 
 import LoginScreen
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerSc
 import com.hm.picplz.viewmodel.MainActivityUiState
 import com.hm.picplz.viewmodel.emptyUserData
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainNavHost(
     navController: NavHostController,
