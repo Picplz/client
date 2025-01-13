@@ -190,7 +190,6 @@ fun LoginScreen(
                         ) {
                             Text(
                                 text = "지도 기능 테스트",
-                                modifier = Modifier.padding(vertical = 8.dp),
                                 style = buttonText
                             )
                         }
