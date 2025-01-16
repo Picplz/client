@@ -53,10 +53,8 @@ import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
-import com.hm.picplz.data.model.Photographer
-import com.hm.picplz.data.model.dummyPhotographers
-import com.hm.picplz.data.repository.PhotographerRepository
-import com.hm.picplz.utils.LocationUtil
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorFilter
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
 import kotlin.math.abs
@@ -254,6 +252,11 @@ fun SearchPhotographerScreen(
                             Image(
                                 painter = rememberAsyncImagePainter(model = profileImageUri),
                                 contentDescription = "작가 위치",
+                                colorFilter = if (!isActive) ColorFilter.colorMatrix(
+                                    ColorMatrix().apply {
+                                        setToSaturation(0f)
+                                    }
+                                ) else null,
                                 modifier = Modifier
                                     .offset(
                                         x = x.dp,
@@ -271,41 +274,63 @@ fun SearchPhotographerScreen(
                                         y = y.dp
                                     ),
                             )
-                            Text(
+                            Row (
                                 modifier = Modifier
                                     .offset(
                                         x = x.dp,
-                                        y = (y+50).dp
+                                        y = (y + 50).dp
                                     )
                                     .zIndex(1f),
-                                text = name,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 12.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Black
-
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .offset(
-                                        x = x.dp,
-                                        y = (y+63).dp
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Spacer(
+                                    modifier = Modifier.width(11.dp)
+                                )
+                                Text(
+                                    text = name,
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        lineHeight = 12.sp * 1.4,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    color = MainThemeColor.Black
+                                )
+                                Spacer(
+                                    modifier = Modifier.width(3.dp)
+                                )
+                                if (isActive) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.active_dot),
+                                        contentDescription = "활성 상태 표시",
                                     )
-                                    .zIndex(1f),
-                                text = "${formattedDistance}m",
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 124.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Gray4
-                            )
+                                } else {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.inactive_dot),
+                                        contentDescription = "활성 상태 표시",
+                                    )
+                                }
+                            }
+                            if (isActive) {
+                                Text(
+                                    modifier = Modifier
+                                        .offset(
+                                            x = x.dp,
+                                            y = (y + 63).dp
+                                        )
+                                        .zIndex(1f),
+                                    text = "${formattedDistance}m",
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        lineHeight = 124.sp * 1.4,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    color = MainThemeColor.Gray4
+                                )
+                            }
                         }
                     }
                 }
