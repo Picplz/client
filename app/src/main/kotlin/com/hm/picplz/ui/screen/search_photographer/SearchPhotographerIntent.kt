@@ -15,4 +15,5 @@ sealed class SearchPhotographerIntent {
     data class SetNearbyPhotographers(val photographers : List<Photographer>) : SearchPhotographerIntent()
     data object FetchPhotographers : SearchPhotographerIntent()
     data object RefreshPhotographers : SearchPhotographerIntent()
+    data class DistributeRandomPositions(val photographers: List<Photographer>) : SearchPhotographerIntent()
 }

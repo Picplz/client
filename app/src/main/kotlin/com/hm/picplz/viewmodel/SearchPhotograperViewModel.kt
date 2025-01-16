@@ -25,6 +25,7 @@ import com.hm.picplz.data.repository.PhotographerRepositoryImpl
 import com.hm.picplz.data.source.PhotographerServiceImpl
 import com.hm.picplz.data.source.PhotographerSourceImpl
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
+import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
 import com.hm.picplz.utils.LocationUtil.getDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,6 +36,7 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 @HiltViewModel
 class SearchPhotographerViewModel @Inject constructor(
@@ -161,18 +163,23 @@ class SearchPhotographerViewModel @Inject constructor(
             is SearchPhotographerIntent.FetchPhotographers,
             is SearchPhotographerIntent.RefreshPhotographers -> {
                 viewModelScope.launch {
+                    handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(true))
                     photographerRepository.getPhotographers()
                         .onSuccess { photographers ->
+                            handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
                             val nearbyPhotographers = filteredPhotographers(photographers)
-                            _state.update { it.copy(
-                                nearbyPhotographers = nearbyPhotographers,
-                                isSearchingPhotographer = false
-                            )}
+                            handleIntent(SearchPhotographerIntent.SetNearbyPhotographers(nearbyPhotographers))
+                            handleIntent(SearchPhotographerIntent.DistributeRandomPositions(nearbyPhotographers))
                         }
                         .onFailure { error ->
+                            handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
                             Log.e("FetchPhotographers", "작가 목록 로딩 실패", error)
                         }
                 }
+            }
+            is SearchPhotographerIntent.DistributeRandomPositions -> {
+                val randomPositions = generateNonOverlappingPositions(intent.photographers)
+                _state.update { it.copy(randomPositions = randomPositions) }
             }
         }
     }
@@ -190,9 +197,31 @@ class SearchPhotographerViewModel @Inject constructor(
         val dummyUserLocation = LatLng.from(37.402960, 127.115587)
         val distanceLimit = 2
 
-        return photographers.filter { (_, location, _ ) ->
+        return photographers.filter { (_, _, location, _ ) ->
             val distance = getDistance(dummyUserLocation, location)
             distance <= distanceLimit
         }
+    }
+
+    private fun generateNonOverlappingPositions(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
+        val positions = mutableMapOf<Int, Pair<Float, Float>>()
+        val minDistance = 100f
+        val screenWidth = 360f
+        val screenHeight = 640f
+        val padding = 40f
+
+        photographers.forEach { photographer ->
+            var newPosition: Pair<Float, Float>
+            do {
+                newPosition = Pair(
+                    Random.nextFloat() * (screenWidth - padding * 2) + padding,
+                    Random.nextFloat() * (screenHeight - padding * 2) + padding
+                )
+            } while (positions.values.any { existingPosition ->
+                calcurateScreenDistance(existingPosition, newPosition) < minDistance
+            })
+            positions[photographer.id] = newPosition
+        }
+        return positions
     }
 }

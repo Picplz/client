@@ -8,8 +8,9 @@ data class SearchPhotographerState (
     val centerCoords: LatLng = LatLng.from(37.406960, 127.115587),
     val userLocation: LatLng? = null,
     val isFetchingGPS: Boolean = true,
-    val isSearchingPhotographer: Boolean = true,
-    val nearbyPhotographers: List<Photographer> = emptyList()
+    val isSearchingPhotographer: Boolean = false,
+    val nearbyPhotographers: List<Photographer> = emptyList(),
+    val randomPositions: Map<Int, Pair<Float, Float>> = emptyMap(),
 ) {
     companion object {
         fun idle(): SearchPhotographerState {

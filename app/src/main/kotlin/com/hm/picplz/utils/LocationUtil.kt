@@ -39,4 +39,13 @@ object LocationUtil {
 
         return Pair(lngDiff, latDiff)
     }
+
+    /**
+     * 화면상의 두 점의 거리
+     */
+    fun calcurateScreenDistance(from: Pair<Float, Float>, to: Pair<Float, Float>): Float {
+        val dx = from.first - to.first
+        val dy = from.second - to.second
+        return sqrt(dx * dx + dy * dy)
+    }
 }
