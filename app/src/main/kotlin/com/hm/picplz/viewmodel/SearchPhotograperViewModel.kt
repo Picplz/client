@@ -18,25 +18,15 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
-import com.hm.picplz.data.model.Photographer
-import com.hm.picplz.data.model.dummyPhotographers
 import com.hm.picplz.data.repository.PhotographerRepository
-import com.hm.picplz.data.repository.PhotographerRepositoryImpl
-import com.hm.picplz.data.source.PhotographerServiceImpl
-import com.hm.picplz.data.source.PhotographerSourceImpl
+import com.hm.picplz.ui.model.Photographer
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
-import com.hm.picplz.utils.LocationUtil.getDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
 import kotlin.random.Random
 
 @HiltViewModel
@@ -51,7 +41,7 @@ class SearchPhotographerViewModel @Inject constructor(
     val sideEffect: SharedFlow<SearchPhotographerSideEffect> get() = _sideEffect
 
     init {
-        handleIntent(SearchPhotographerIntent.FetchPhotographers)
+        handleIntent(SearchPhotographerIntent.FetchNearbyPhotographers)
     }
 
     private val kakaoSource = KakaoMapSource()
@@ -160,18 +150,24 @@ class SearchPhotographerViewModel @Inject constructor(
                 _state.update { it.copy(isSearchingPhotographer = intent.isSearchingPhotographer) }
             }
             is SearchPhotographerIntent.SetNearbyPhotographers -> {
-                _state.update { it.copy(nearbyPhotographers = intent.photographers)}
+                _state.update { it.copy(nearbyPhotographers = intent.nearbyPhotographers)}
             }
-            is SearchPhotographerIntent.FetchPhotographers,
-            is SearchPhotographerIntent.RefreshPhotographers -> {
+            is SearchPhotographerIntent.FetchNearbyPhotographers,
+            is SearchPhotographerIntent.RefetchNearbyPhotographers -> {
                 viewModelScope.launch {
+//                    val userLocation = state.value.userLocation ?: return@launch
+                    val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+
                     handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(true))
-                    photographerRepository.getPhotographers()
-                        .onSuccess { photographers ->
+                    photographerRepository.getNearbyPhotographers(
+                        userLocation = dummyUserLocation,
+                        distanceLimit = 2,
+                        countLimit = 5
+                    )
+                        .onSuccess { nearbyPhotographers ->
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
-                            val nearbyPhotographers = filteredPhotographers(photographers)
                             handleIntent(SearchPhotographerIntent.SetNearbyPhotographers(nearbyPhotographers))
-                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers))
+                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers.active + nearbyPhotographers.inactive))
                         }
                         .onFailure { error ->
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
@@ -195,20 +191,9 @@ class SearchPhotographerViewModel @Inject constructor(
     }
     /**
      * Todo: 요구사항에 따라 위치 생성 정밀화
-     * - 필터링 우선순위 설정
-     * - 위치 출력시 유효거리 대상 수에 따라 다른 방식의 출력
+     * - 위치 출력시 유효거리 대상 수에 따라 다른 방식의 random offset 배치
      */
 
-    private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
-//        val userLocation = _state.value.userLocation ?: return emptyList()
-        val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-        val distanceLimit = 2
-
-        return photographers.filter { (_, _, location, _, isActive ) ->
-            val distance = getDistance(dummyUserLocation, location)
-            distance <= distanceLimit
-        }
-    }
 
     class OffsetGenerationFailedException : Exception("전체 위치 생성 최종 실패")
 

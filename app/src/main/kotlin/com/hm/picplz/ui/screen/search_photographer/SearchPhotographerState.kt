@@ -1,6 +1,6 @@
 package com.hm.picplz.ui.screen.search_photographer
 
-import com.hm.picplz.data.model.Photographer
+import com.hm.picplz.ui.model.FilteredPhotographers
 import com.kakao.vectormap.LatLng
 
 data class SearchPhotographerState (
@@ -9,7 +9,7 @@ data class SearchPhotographerState (
     val userLocation: LatLng? = null,
     val isFetchingGPS: Boolean = true,
     val isSearchingPhotographer: Boolean = false,
-    val nearbyPhotographers: List<Photographer> = emptyList(),
+    val nearbyPhotographers: FilteredPhotographers = FilteredPhotographers(),
     val randomOffsets: Map<Int, Pair<Float, Float>> = emptyMap(),
 ) {
     companion object {
