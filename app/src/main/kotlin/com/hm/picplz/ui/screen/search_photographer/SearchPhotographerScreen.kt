@@ -243,30 +243,21 @@ fun SearchPhotographerScreen(
                             painter = painterResource(id = R.drawable.center_char),
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
-                        currentState.nearbyPhotographers.forEach {  ( name, photographerLocation, profileImageUri )  ->
+                        currentState.nearbyPhotographers.forEach {  ( id, name, photographerLocation, profileImageUri )  ->
 //                            val userLocation = currentState.userLocation
-//                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
-//                                from = userLocation!!,
-//                                to = photographerLocation
-//                            )
                             val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
-                                from = dummyUserLocation,
-                                to = photographerLocation
-                            )
+
                             val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
                             val formattedDistance = String.format("%.0f", distanceInMeters)
-                            val screenWidthDp = LocalConfiguration.current.screenWidthDp
-                            val maxRadius = screenWidthDp * 0.50f
-                            val scale = maxRadius / 2f
 
+                            val (x, y) = currentState.randomOffsets[id] ?: return@forEach
                             Image(
                                 painter = rememberAsyncImagePainter(model = profileImageUri),
                                 contentDescription = "작가 위치",
                                 modifier = Modifier
                                     .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
+                                        x = x.dp,
+                                        y = y.dp
                                     )
                                     .size(74.dp)
                                     .clip(CircleShape)
@@ -276,15 +267,15 @@ fun SearchPhotographerScreen(
                                 modifier = Modifier
                                     .height(8.dp)
                                     .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
+                                        x = x.dp,
+                                        y = y.dp
                                     ),
                             )
                             Text(
                                 modifier = Modifier
                                     .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+50).dp
+                                        x = x.dp,
+                                        y = (y+50).dp
                                     )
                                     .zIndex(1f),
                                 text = name,
@@ -301,8 +292,8 @@ fun SearchPhotographerScreen(
                             Text(
                                 modifier = Modifier
                                     .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+63).dp
+                                        x = x.dp,
+                                        y = (y+63).dp
                                     )
                                     .zIndex(1f),
                                 text = "${formattedDistance}m",
