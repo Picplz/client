@@ -10,7 +10,7 @@ data class SearchPhotographerState (
     val isFetchingGPS: Boolean = true,
     val isSearchingPhotographer: Boolean = false,
     val nearbyPhotographers: List<Photographer> = emptyList(),
-    val randomPositions: Map<Int, Pair<Float, Float>> = emptyMap(),
+    val randomOffsets: Map<Int, Pair<Float, Float>> = emptyMap(),
 ) {
     companion object {
         fun idle(): SearchPhotographerState {

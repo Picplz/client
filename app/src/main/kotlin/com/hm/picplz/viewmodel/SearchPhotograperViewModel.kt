@@ -28,6 +28,7 @@ import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
 import com.hm.picplz.utils.LocationUtil.getDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
@@ -40,7 +41,8 @@ import kotlin.random.Random
 
 @HiltViewModel
 class SearchPhotographerViewModel @Inject constructor(
-    private val photographerRepository: PhotographerRepository
+    private val photographerRepository: PhotographerRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
@@ -169,7 +171,7 @@ class SearchPhotographerViewModel @Inject constructor(
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
                             val nearbyPhotographers = filteredPhotographers(photographers)
                             handleIntent(SearchPhotographerIntent.SetNearbyPhotographers(nearbyPhotographers))
-                            handleIntent(SearchPhotographerIntent.DistributeRandomPositions(nearbyPhotographers))
+                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers))
                         }
                         .onFailure { error ->
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
@@ -177,9 +179,9 @@ class SearchPhotographerViewModel @Inject constructor(
                         }
                 }
             }
-            is SearchPhotographerIntent.DistributeRandomPositions -> {
-                val randomPositions = generateNonOverlappingPositions(intent.photographers)
-                _state.update { it.copy(randomPositions = randomPositions) }
+            is SearchPhotographerIntent.DistributeRandomOffsets -> {
+                val randomOffsets = generateNonOverlappingOffsets(intent.photographers)
+                _state.update { it.copy(randomOffsets = randomOffsets) }
             }
         }
     }
@@ -203,25 +205,35 @@ class SearchPhotographerViewModel @Inject constructor(
         }
     }
 
-    private fun generateNonOverlappingPositions(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
-        val positions = mutableMapOf<Int, Pair<Float, Float>>()
-        val minDistance = 100f
-        val screenWidth = 360f
-        val screenHeight = 640f
+    private fun generateNonOverlappingOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
+        val offsets = mutableMapOf<Int, Pair<Float, Float>>()
+        val minDistance = 110f
+
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels / displayMetrics.density
         val padding = 40f
 
+        val maxOffsetX = (screenWidth - padding * 2) / 2
+
+        Log.d("랜덤 위치", "screenWidth: $screenWidth, padding: $padding")
+        val center = Pair(0f, 0f)
         photographers.forEach { photographer ->
-            var newPosition: Pair<Float, Float>
+            var newOffset: Pair<Float, Float>
             do {
-                newPosition = Pair(
-                    Random.nextFloat() * (screenWidth - padding * 2) + padding,
-                    Random.nextFloat() * (screenHeight - padding * 2) + padding
+                newOffset = Pair(
+                    (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                    (Random.nextFloat() * 2 - 1) * maxOffsetX
                 )
-            } while (positions.values.any { existingPosition ->
-                calcurateScreenDistance(existingPosition, newPosition) < minDistance
-            })
-            positions[photographer.id] = newPosition
+            } while (
+                offsets.values.any { existingOffset ->
+                    calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                } ||
+                calcurateScreenDistance(center, newOffset) < minDistance
+            )
+            offsets[photographer.id] = newOffset
         }
-        return positions
+        Log.d("랜덤 위치", "positions: $offsets")
+
+        return offsets
     }
 }
