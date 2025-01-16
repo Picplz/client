@@ -193,13 +193,18 @@ class SearchPhotographerViewModel @Inject constructor(
         }
         locationListeners.clear()
     }
+    /**
+     * Todo: 요구사항에 따라 위치 생성 정밀화
+     * - 필터링 우선순위 설정
+     * - 위치 출력시 유효거리 대상 수에 따라 다른 방식의 출력
+     */
 
     private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
 //        val userLocation = _state.value.userLocation ?: return emptyList()
         val dummyUserLocation = LatLng.from(37.402960, 127.115587)
         val distanceLimit = 2
 
-        return photographers.filter { (_, _, location, _ ) ->
+        return photographers.filter { (_, _, location, _, isActive ) ->
             val distance = getDistance(dummyUserLocation, location)
             distance <= distanceLimit
         }
@@ -223,6 +228,7 @@ class SearchPhotographerViewModel @Inject constructor(
 
     private class OffsetGenerationException : Exception("개별 위치 생성 실패")
 
+
     private fun tryGenerateOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
         val offsets = mutableMapOf<Int, Pair<Float, Float>>()
         val minDistance = 110f
@@ -236,7 +242,7 @@ class SearchPhotographerViewModel @Inject constructor(
 
         val center = Pair(0f, 0f)
 
-        photographers.forEach { photographer ->
+        photographers.forEach { (id, _, _, _, isActive) ->
             var newOffset: Pair<Float, Float>
             var attempts = 0
             do {
@@ -254,7 +260,7 @@ class SearchPhotographerViewModel @Inject constructor(
                 } ||
                 calcurateScreenDistance(center, newOffset) < minDistance
             )
-            offsets[photographer.id] = newOffset
+            offsets[id] = newOffset
         }
 
         return offsets

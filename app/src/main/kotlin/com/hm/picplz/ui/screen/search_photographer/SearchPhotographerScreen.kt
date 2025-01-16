@@ -243,7 +243,7 @@ fun SearchPhotographerScreen(
                             painter = painterResource(id = R.drawable.center_char),
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
-                        currentState.nearbyPhotographers.forEach {  ( id, name, photographerLocation, profileImageUri )  ->
+                        currentState.nearbyPhotographers.forEach {  ( id, name, photographerLocation, profileImageUri, isActive )  ->
 //                            val userLocation = currentState.userLocation
                             val dummyUserLocation = LatLng.from(37.402960, 127.115587)
 
