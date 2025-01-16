@@ -205,9 +205,28 @@ class SearchPhotographerViewModel @Inject constructor(
         }
     }
 
+    class OffsetGenerationFailedException : Exception("전체 위치 생성 최종 실패")
+
     private fun generateNonOverlappingOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
+        val maxAttempts = 1000
+
+        for (attempt in 1..maxAttempts) {
+            try {
+                return tryGenerateOffsets(photographers)
+            } catch (e: OffsetGenerationException) {
+                continue
+            }
+        }
+
+        throw OffsetGenerationFailedException()
+    }
+
+    private class OffsetGenerationException : Exception("개별 위치 생성 실패")
+
+    private fun tryGenerateOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
         val offsets = mutableMapOf<Int, Pair<Float, Float>>()
         val minDistance = 110f
+        val maxSingleAttempts = 100
 
         val displayMetrics = context.resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels / displayMetrics.density
@@ -215,15 +234,20 @@ class SearchPhotographerViewModel @Inject constructor(
 
         val maxOffsetX = (screenWidth - padding * 2) / 2
 
-        Log.d("랜덤 위치", "screenWidth: $screenWidth, padding: $padding")
         val center = Pair(0f, 0f)
+
         photographers.forEach { photographer ->
             var newOffset: Pair<Float, Float>
+            var attempts = 0
             do {
+                attempts++
                 newOffset = Pair(
                     (Random.nextFloat() * 2 - 1) * maxOffsetX,
                     (Random.nextFloat() * 2 - 1) * maxOffsetX
                 )
+                if (attempts >= maxSingleAttempts) {
+                    throw OffsetGenerationException()
+                }
             } while (
                 offsets.values.any { existingOffset ->
                     calcurateScreenDistance(existingOffset, newOffset) < minDistance
@@ -232,7 +256,6 @@ class SearchPhotographerViewModel @Inject constructor(
             )
             offsets[photographer.id] = newOffset
         }
-        Log.d("랜덤 위치", "positions: $offsets")
 
         return offsets
     }
