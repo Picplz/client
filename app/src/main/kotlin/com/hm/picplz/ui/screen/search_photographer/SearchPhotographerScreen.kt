@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,12 +28,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,7 +70,6 @@ fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchPhotographerViewModel = hiltViewModel(),
     mainNavController: NavHostController,
-    tempView: Boolean = false  // 개발용 임시 파라미터
 ) {
     val context = LocalContext.current
     val currentState = viewModel.state.collectAsState().value
@@ -129,7 +132,7 @@ fun SearchPhotographerScreen(
                     .fillMaxSize()
                     .background(color = MainThemeColor.Gray1)
             ) {
-                if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
+                if (currentState.isFetchingGPS && currentState.userLocation == null) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -153,7 +156,7 @@ fun SearchPhotographerScreen(
                     Row (
                         modifier = modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, start = 15.dp, end = 15.dp)
+                            .padding(top = 10.dp, start = 5.dp, end = 3.dp)
                         ,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -164,7 +167,7 @@ fun SearchPhotographerScreen(
                                     horizontal = 15.dp,
                                 ),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.End
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.marker_map),
@@ -188,44 +191,57 @@ fun SearchPhotographerScreen(
                         Spacer(modifier = Modifier.width(5.dp))
                         Box(
                             modifier = Modifier
-                                .background(
-                                    color = MainThemeColor.White,
-                                    shape = RoundedCornerShape(50.dp)
-                                )
-                                .border(
-                                    width = 1.dp,
-                                    color = MainThemeColor.Gray2,
-                                    shape = RoundedCornerShape(50.dp)
-                                ),
-                            contentAlignment = Alignment.Center,
-
-                        ) {
-                            Row (
+                                .size(width = 166.dp, height = 48.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    viewModel.handleIntent(SearchPhotographerIntent.RefetchNearbyPhotographers)
+                                },
+                            contentAlignment = Alignment.Center
+                        ){
+                            Box(
                                 modifier = Modifier
-                                    .padding(
-                                        horizontal = 15.dp,
-                                        vertical = 6.dp
+                                    .background(
+                                        color = MainThemeColor.White,
+                                        shape = RoundedCornerShape(50.dp)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = MainThemeColor.Gray2,
+                                        shape = RoundedCornerShape(50.dp)
                                     ),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ){
-                                Text(
-                                    text = "내 위치 새로고침",
-                                    style = TextStyle(
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                        lineHeight = 14.sp * 1.4,
-                                        letterSpacing = 0.sp
-                                    ),
-                                    color = MainThemeColor.Gray4
-                                )
-                                Spacer(modifier = Modifier.width(3.dp))
-                                Image(
-                                    painter = painterResource(id = R.drawable.arrow_rotate_left),
-                                    contentDescription = "circles"
-                                )
+                                contentAlignment = Alignment.Center,
+
+                            ) {
+                                Row (
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = 15.dp,
+                                            vertical = 6.dp
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                ){
+                                    Text(
+                                        text = "내 위치 새로고침",
+                                        style = TextStyle(
+                                            fontFamily = Pretendard,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            lineHeight = 14.sp * 1.4,
+                                            letterSpacing = 0.sp
+                                        ),
+                                        color = MainThemeColor.Gray4
+                                    )
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow_rotate_left),
+                                        contentDescription = "circles"
+                                    )
+                                }
                             }
+
                         }
                     }
                     Box(
