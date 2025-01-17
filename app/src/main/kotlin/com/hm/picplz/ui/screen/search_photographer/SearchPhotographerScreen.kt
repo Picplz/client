@@ -253,6 +253,7 @@ fun SearchPhotographerScreen(
                         Image(
                             painter = painterResource(R.drawable.multicircle),
                             contentDescription = "범위 지정 이미지",
+                            contentScale = ContentScale.FillHeight
                         )
                         Image(
                             painter = painterResource(id = R.drawable.center_char),
