@@ -233,9 +233,15 @@ class SearchPhotographerViewModel @Inject constructor(
         val maxOffsetX = (screenWidth - padding * 2) / 2
         val innerCircleMaxOffsetX = maxOffsetX * innerAreaRatio
         val outerCircleMinOffsetX = maxOffsetX * outerAreaRatio
-        Log.d("안뇽", innerCircleMaxOffsetX.toString())
 
         val center = Pair(0f, 0f)
+
+        fun generateOffset(): Pair<Float, Float> {
+            return Pair(
+                (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                (Random.nextFloat() * 2 - 1) * maxOffsetX
+            )
+        }
 
         if (photographers.inactive.isEmpty()) {
             photographers.active.forEachIndexed{ index, photographer ->
@@ -244,17 +250,8 @@ class SearchPhotographerViewModel @Inject constructor(
 
                 do {
                     attempts++
-                    newOffset = if (index < 3) {
-                        Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX
-                        )
-                    } else {
-                        Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX
-                        )
-                    }
+                    newOffset = generateOffset()
+
                     if (attempts >= maxSingleAttempts) {
                         throw OffsetGenerationException()
                     }
@@ -275,17 +272,7 @@ class SearchPhotographerViewModel @Inject constructor(
 
                 do {
                     attempts++
-                    newOffset = if (index < 3) {
-                        Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX
-                        )
-                    } else {
-                        Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX
-                        )
-                    }
+                    newOffset = generateOffset()
                     if (attempts >= maxSingleAttempts) {
                         throw OffsetGenerationException()
                     }
@@ -304,10 +291,7 @@ class SearchPhotographerViewModel @Inject constructor(
                 var attempts = 0
                 do {
                     attempts++
-                    newOffset = Pair(
-                        (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                        (Random.nextFloat() * 2 - 1) * maxOffsetX
-                    )
+                    newOffset = generateOffset()
                     if (attempts >= maxSingleAttempts) {
                         throw OffsetGenerationException()
                     }
