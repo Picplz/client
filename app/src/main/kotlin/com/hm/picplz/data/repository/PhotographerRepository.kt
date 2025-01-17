@@ -13,7 +13,8 @@ interface PhotographerRepository {
     suspend fun getNearbyPhotographers(
         userLocation: LatLng,
         distanceLimit: Int = 2,
-        countLimit: Int = 5
+        countLimit: Int = 5,
+        userAddress: String,
     ): Result<FilteredPhotographers>}
 
 class PhotographerRepositoryImpl @Inject constructor(
@@ -27,31 +28,38 @@ class PhotographerRepositoryImpl @Inject constructor(
     override suspend fun getNearbyPhotographers(
         userLocation: LatLng,
         distanceLimit: Int,
-        countLimit: Int
+        countLimit: Int,
+        userAddress: String
     ): Result<FilteredPhotographers> {
-        return photographerSource.getPhotographers().map { photographers ->
-            val filteredPhotographers = photographers
-                .map { it to getDistance(userLocation, it.location) }
+        return photographerSource.getPhotographers().map { response ->
+            val photographers = response.toUiModel()
+
+            val activeNearbyPhotographers = photographers
+                .asSequence()
+                .filter { it.isActive }
+                .mapNotNull {
+                    it.location?.let { location ->
+                        it to getDistance(userLocation, location)
+                    }
+                }
                 .filter { (_, distance) -> distance <= distanceLimit }
                 .sortedBy { (_, distance) -> distance }
-                .map { (photographer, _) -> photographer.toUiModel() }
-
-            val activePhotographers = filteredPhotographers
-                .filter { it.isActive }
                 .take(countLimit)
+                .map { (photographer, _) -> photographer }
+                .toList()
 
-            if (activePhotographers.size < countLimit) {
-                val inactivePhotographers = filteredPhotographers
-                    .filter { !it.isActive }
-                    .take(countLimit - activePhotographers.size)
+            if (activeNearbyPhotographers.size < countLimit) {
+                val inactiveSameAreaPhotographers = photographers
+                    .filter { !it.isActive && it.workingArea == userAddress }
+                    .take(countLimit - activeNearbyPhotographers.size)
 
                 FilteredPhotographers(
-                    active = activePhotographers,
-                    inactive = inactivePhotographers
+                    active = activeNearbyPhotographers,
+                    inactive = inactiveSameAreaPhotographers
                 )
             } else {
                 FilteredPhotographers(
-                    active = activePhotographers,
+                    active = activeNearbyPhotographers,
                 )
             }
         }

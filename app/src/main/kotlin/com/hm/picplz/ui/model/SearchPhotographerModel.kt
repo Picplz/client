@@ -6,9 +6,10 @@ import com.kakao.vectormap.LatLng
 data class Photographer (
     val id: Int,
     val name: String,
-    val location: LatLng,
+    val location: LatLng? = null,
     val profileImageUri: String,
     val isActive: Boolean,
+    val workingArea: String,
 )
 
 fun PhotographerResponse.toUiModel(): Photographer {
@@ -17,7 +18,8 @@ fun PhotographerResponse.toUiModel(): Photographer {
         name = name,
         location = location,
         profileImageUri = profileImageUri,
-        isActive = isActive
+        isActive = isActive,
+        workingArea = workingArea,
     )
 }
 

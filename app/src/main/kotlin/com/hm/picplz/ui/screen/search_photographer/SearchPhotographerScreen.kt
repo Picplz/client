@@ -59,6 +59,7 @@ import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
 import kotlin.math.abs
@@ -250,8 +251,8 @@ fun SearchPhotographerScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
-                            painter = painterResource(R.drawable.circles),
-                            contentDescription = "범위 지정 이미지"
+                            painter = painterResource(R.drawable.multicircle),
+                            contentDescription = "범위 지정 이미지",
                         )
                         Image(
                             painter = painterResource(id = R.drawable.center_char),
@@ -262,7 +263,9 @@ fun SearchPhotographerScreen(
 //                            val userLocation = currentState.userLocation
                             val dummyUserLocation = LatLng.from(37.402960, 127.115587)
 
-                            val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
+                            val distanceInMeters = photographerLocation?.let { location ->
+                                getDistance(dummyUserLocation, location) * 1000
+                            }
                             val formattedDistance = String.format("%.0f", distanceInMeters)
 
                             val (x, y) = currentState.randomOffsets[id] ?: return@forEach
@@ -329,7 +332,7 @@ fun SearchPhotographerScreen(
                                     )
                                 }
                             }
-                            if (isActive) {
+                            if (isActive && distanceInMeters !== null) {
                                 Text(
                                     modifier = Modifier
                                         .offset(

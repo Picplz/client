@@ -23,9 +23,10 @@ val dummyPhotographers = listOf(
     PhotographerResponse(
         id = 1,
         name = "작가1",
-        location = LatLng.from(37.420960, 127.115587),
+        location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
+        workingArea = "마포구 서교동"
     ),
     PhotographerResponse(
         id = 2,
@@ -33,20 +34,23 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.412510, 127.125137),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 3,
         name = "작가3",
-        location = LatLng.from(37.402960, 127.124587),
+        location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 4,
         name = "작가4",
-        location = LatLng.from(37.392960, 127.125587),
+        location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 5,
@@ -54,13 +58,15 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.384960, 127.115587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 6,
         name = "작가6",
-        location = LatLng.from(37.392960, 127.105587),
+        location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 7,
@@ -68,6 +74,7 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.402960, 127.106587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
+        workingArea = "종로구 무악동"
     ),
     PhotographerResponse(
         id = 8,
@@ -75,5 +82,6 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.412960, 127.105587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
+        workingArea = "종로구 무악동"
     )
 )

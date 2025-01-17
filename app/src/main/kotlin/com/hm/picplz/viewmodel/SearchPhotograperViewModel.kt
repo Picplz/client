@@ -19,6 +19,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import com.hm.picplz.data.repository.PhotographerRepository
+import com.hm.picplz.ui.model.FilteredPhotographers
 import com.hm.picplz.ui.model.Photographer
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
@@ -157,17 +158,20 @@ class SearchPhotographerViewModel @Inject constructor(
                 viewModelScope.launch {
 //                    val userLocation = state.value.userLocation ?: return@launch
                     val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+//                    val userAddress = state.value.address ?: return@launch
+                    val dummyUserAddress = "종로구 무악동"
 
                     handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(true))
                     photographerRepository.getNearbyPhotographers(
                         userLocation = dummyUserLocation,
                         distanceLimit = 2,
-                        countLimit = 5
+                        countLimit = 5,
+                        userAddress = dummyUserAddress,
                     )
                         .onSuccess { nearbyPhotographers ->
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
                             handleIntent(SearchPhotographerIntent.SetNearbyPhotographers(nearbyPhotographers))
-                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers.active + nearbyPhotographers.inactive))
+                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers))
                         }
                         .onFailure { error ->
                             handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
@@ -197,7 +201,7 @@ class SearchPhotographerViewModel @Inject constructor(
 
     class OffsetGenerationFailedException : Exception("전체 위치 생성 최종 실패")
 
-    private fun generateNonOverlappingOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
+    private fun generateNonOverlappingOffsets(photographers: FilteredPhotographers): Map<Int, Pair<Float, Float>> {
         val maxAttempts = 1000
 
         for (attempt in 1..maxAttempts) {
@@ -214,9 +218,13 @@ class SearchPhotographerViewModel @Inject constructor(
     private class OffsetGenerationException : Exception("개별 위치 생성 실패")
 
 
-    private fun tryGenerateOffsets(photographers: List<Photographer>): Map<Int, Pair<Float, Float>> {
+    private fun tryGenerateOffsets(photographers: FilteredPhotographers): Map<Int, Pair<Float, Float>> {
         val offsets = mutableMapOf<Int, Pair<Float, Float>>()
         val minDistance = 110f
+        val innerCircleMaxDistance = 160f
+        val outerCircleMinDistance = 180f
+        val smallAreaRatio = 0.5f
+
         val maxSingleAttempts = 100
 
         val displayMetrics = context.resources.displayMetrics
@@ -227,27 +235,89 @@ class SearchPhotographerViewModel @Inject constructor(
 
         val center = Pair(0f, 0f)
 
-        photographers.forEach { (id, _, _, _, isActive) ->
-            var newOffset: Pair<Float, Float>
-            var attempts = 0
-            do {
-                attempts++
-                newOffset = Pair(
-                    (Random.nextFloat() * 2 - 1) * maxOffsetX,
-                    (Random.nextFloat() * 2 - 1) * maxOffsetX
-                )
-                if (attempts >= maxSingleAttempts) {
-                    throw OffsetGenerationException()
-                }
-            } while (
-                offsets.values.any { existingOffset ->
-                    calcurateScreenDistance(existingOffset, newOffset) < minDistance
-                } ||
-                calcurateScreenDistance(center, newOffset) < minDistance
-            )
-            offsets[id] = newOffset
-        }
+        if (photographers.inactive.isEmpty()) {
+            photographers.active.forEachIndexed{ index, photographer ->
+                var newOffset: Pair<Float, Float>
+                var attempts = 0
 
+                do {
+                    attempts++
+                    newOffset = if (index < 3) {
+                        Pair(
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio
+                        )
+                    } else {
+                        Pair(
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX
+                        )
+                    }
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxDistance) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinDistance)
+                )
+                offsets[photographer.id] = newOffset
+            }
+        } else {
+            photographers.active.forEachIndexed { index, photographer ->
+                var attempts = 0
+                var newOffset: Pair<Float, Float>
+
+                do {
+                    attempts++
+                    newOffset = if (index < 3) {
+                        Pair(
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio
+                        )
+                    } else {
+                        Pair(
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX
+                        )
+                    }
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxDistance) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinDistance)
+                )
+                offsets[photographer.id] = newOffset
+            }
+            photographers.inactive.forEach { photographer ->
+                var newOffset: Pair<Float, Float>
+                var attempts = 0
+                do {
+                    attempts++
+                    newOffset = Pair(
+                        (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                        (Random.nextFloat() * 2 - 1) * maxOffsetX
+                    )
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    calcurateScreenDistance(center, newOffset) < outerCircleMinDistance
+                )
+                offsets[photographer.id] = newOffset
+            }
+        }
         return offsets
     }
 }

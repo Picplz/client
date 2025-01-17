@@ -6,9 +6,10 @@ import com.kakao.vectormap.LatLng
 data class PhotographerEntity(
     val id: Int,
     val name: String,
-    val location: LatLng,
+    val location: LatLng?,
     val isActive: Boolean,
-    val profileImageUri: String
+    val profileImageUri: String,
+    val workingArea: String,
 )
 
 typealias PhotographerResponse = PhotographerEntity
