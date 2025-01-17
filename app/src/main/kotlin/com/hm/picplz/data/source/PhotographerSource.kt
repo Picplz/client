@@ -1,6 +1,7 @@
 package com.hm.picplz.data.source
 
 import com.hm.picplz.data.model.PhotographerListResponse
+import com.hm.picplz.data.service.PhotographerService
 import javax.inject.Inject
 
 interface PhotographerSource {

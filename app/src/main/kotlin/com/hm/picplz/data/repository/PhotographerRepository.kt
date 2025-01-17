@@ -51,6 +51,7 @@ class PhotographerRepositoryImpl @Inject constructor(
             if (activeNearbyPhotographers.size < countLimit) {
                 val inactiveSameAreaPhotographers = photographers
                     .filter { !it.isActive && it.workingArea == userAddress }
+                    .shuffled()
                     .take(countLimit - activeNearbyPhotographers.size)
 
                 FilteredPhotographers(

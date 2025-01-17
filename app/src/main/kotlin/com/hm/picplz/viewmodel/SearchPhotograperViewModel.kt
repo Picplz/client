@@ -20,7 +20,6 @@ import android.content.pm.PackageManager
 import android.location.LocationListener
 import com.hm.picplz.data.repository.PhotographerRepository
 import com.hm.picplz.ui.model.FilteredPhotographers
-import com.hm.picplz.ui.model.Photographer
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
 import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -193,11 +192,6 @@ class SearchPhotographerViewModel @Inject constructor(
         }
         locationListeners.clear()
     }
-    /**
-     * Todo: 요구사항에 따라 위치 생성 정밀화
-     * - 위치 출력시 유효거리 대상 수에 따라 다른 방식의 random offset 배치
-     */
-
 
     class OffsetGenerationFailedException : Exception("전체 위치 생성 최종 실패")
 
@@ -221,9 +215,9 @@ class SearchPhotographerViewModel @Inject constructor(
     private fun tryGenerateOffsets(photographers: FilteredPhotographers): Map<Int, Pair<Float, Float>> {
         val offsets = mutableMapOf<Int, Pair<Float, Float>>()
         val minDistance = 110f
-        val innerCircleMaxDistance = 160f
-        val outerCircleMinDistance = 180f
-        val smallAreaRatio = 0.5f
+
+        val innerAreaRatio = 0.75f
+        val outerAreaRatio = 0.93f
 
         val maxSingleAttempts = 100
 
@@ -232,6 +226,9 @@ class SearchPhotographerViewModel @Inject constructor(
         val padding = 40f
 
         val maxOffsetX = (screenWidth - padding * 2) / 2
+        val innerCircleMaxOffsetX = maxOffsetX * innerAreaRatio
+        val outerCircleMinOffsetX = maxOffsetX * outerAreaRatio
+        Log.d("안뇽", innerCircleMaxOffsetX.toString())
 
         val center = Pair(0f, 0f)
 
@@ -244,8 +241,8 @@ class SearchPhotographerViewModel @Inject constructor(
                     attempts++
                     newOffset = if (index < 3) {
                         Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX
                         )
                     } else {
                         Pair(
@@ -261,8 +258,8 @@ class SearchPhotographerViewModel @Inject constructor(
                         calcurateScreenDistance(existingOffset, newOffset) < minDistance
                     } ||
                     (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
-                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxDistance) ||
-                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinDistance)
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxOffsetX) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX)
                 )
                 offsets[photographer.id] = newOffset
             }
@@ -275,8 +272,8 @@ class SearchPhotographerViewModel @Inject constructor(
                     attempts++
                     newOffset = if (index < 3) {
                         Pair(
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio,
-                            (Random.nextFloat() * 2 - 1) * maxOffsetX * smallAreaRatio
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                            (Random.nextFloat() * 2 - 1) * maxOffsetX
                         )
                     } else {
                         Pair(
@@ -292,8 +289,8 @@ class SearchPhotographerViewModel @Inject constructor(
                         calcurateScreenDistance(existingOffset, newOffset) < minDistance
                     } ||
                     (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
-                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxDistance) ||
-                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinDistance)
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxOffsetX) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX)
                 )
                 offsets[photographer.id] = newOffset
             }
@@ -313,7 +310,7 @@ class SearchPhotographerViewModel @Inject constructor(
                     offsets.values.any { existingOffset ->
                         calcurateScreenDistance(existingOffset, newOffset) < minDistance
                     } ||
-                    calcurateScreenDistance(center, newOffset) < outerCircleMinDistance
+                    calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX
                 )
                 offsets[photographer.id] = newOffset
             }
