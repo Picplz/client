@@ -1,4 +1,4 @@
-package com.hm.picplz.ui.screen.search_photographer.common
+package com.hm.picplz.ui.screen.search_photographer.composable
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState

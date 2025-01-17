@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,21 +34,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
-import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
 import androidx.compose.ui.layout.ContentScale
-import com.hm.picplz.ui.screen.search_photographer.common.PhotographerProfile
+import com.hm.picplz.ui.screen.search_photographer.composable.AddressMarker
+import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerProfile
+import com.hm.picplz.ui.screen.search_photographer.composable.RefetchButton
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
 
@@ -128,7 +122,11 @@ fun SearchPhotographerScreen(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
+                        viewModel.handleIntent(
+                            SearchPhotographerIntent.SetSelectedPhotographerId(
+                                null
+                            )
+                        )
                     },
             ) {
                 if (currentState.isFetchingGPS && currentState.userLocation == null) {
@@ -160,88 +158,14 @@ fun SearchPhotographerScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 15.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.marker_map),
-                                contentDescription = "지도 표시 마커"
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = currentState.address ?: "마포구 서교동",
-                                modifier = Modifier,
-                                color = MainThemeColor.Black,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    lineHeight = 18.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(width = 166.dp, height = 48.dp)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null
-                                ) {
-                                    viewModel.handleIntent(SearchPhotographerIntent.RefetchNearbyPhotographers)
-                                },
-                            contentAlignment = Alignment.Center
-                        ){
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = MainThemeColor.White,
-                                        shape = RoundedCornerShape(50.dp)
-                                    )
-                                    .border(
-                                        width = 1.dp,
-                                        color = MainThemeColor.Gray2,
-                                        shape = RoundedCornerShape(50.dp)
-                                    ),
-                                contentAlignment = Alignment.Center,
-
-                            ) {
-                                Row (
-                                    modifier = Modifier
-                                        .padding(
-                                            horizontal = 15.dp,
-                                            vertical = 6.dp
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center,
-                                ){
-                                    Text(
-                                        text = "내 위치 새로고침",
-                                        style = TextStyle(
-                                            fontFamily = Pretendard,
-                                            fontWeight = FontWeight.Normal,
-                                            fontSize = 14.sp,
-                                            lineHeight = 14.sp * 1.4,
-                                            letterSpacing = 0.sp
-                                        ),
-                                        color = MainThemeColor.Gray4
-                                    )
-                                    Spacer(modifier = Modifier.width(3.dp))
-                                    Image(
-                                        painter = painterResource(id = R.drawable.arrow_rotate_left),
-                                        contentDescription = "circles"
-                                    )
-                                }
+                        AddressMarker(
+                            address = currentState.address
+                        )
+                        RefetchButton (
+                            onClick = {
+                                viewModel.handleIntent(SearchPhotographerIntent.RefetchNearbyPhotographers)
                             }
-
-                        }
+                        )
                     }
                     Box(
                         modifier = Modifier
@@ -258,7 +182,7 @@ fun SearchPhotographerScreen(
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
                         val entirePhotographer = currentState.nearbyPhotographers.active + currentState.nearbyPhotographers.inactive
-//                      val userLocation = currentState.userLocation
+                        // val userLocation = currentState.userLocation
                         val dummyUserLocation = LatLng.from(37.402960, 127.115587)
                         entirePhotographer.forEach {  ( id, name, photographerLocation, profileImageUri, isActive )  ->
                             val (x, y) = currentState.randomOffsets[id] ?: return@forEach
