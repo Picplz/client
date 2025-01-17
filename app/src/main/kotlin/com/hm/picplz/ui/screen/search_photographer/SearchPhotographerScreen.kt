@@ -128,6 +128,12 @@ fun SearchPhotographerScreen(
         }
     }
 
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        if (scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+            viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
+        }
+    }
+
     CommonBottomSheetScaffold (
         modifier = Modifier
             .fillMaxSize(),

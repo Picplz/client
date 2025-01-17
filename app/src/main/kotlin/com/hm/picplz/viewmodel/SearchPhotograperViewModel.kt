@@ -159,7 +159,7 @@ class SearchPhotographerViewModel @Inject constructor(
                     val dummyUserLocation = LatLng.from(37.402960, 127.115587)
 //                    val userAddress = state.value.address ?: return@launch
                     val dummyUserAddress = "종로구 무악동"
-
+                    handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
                     handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(true))
                     photographerRepository.getNearbyPhotographers(
                         userLocation = dummyUserLocation,
