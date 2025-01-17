@@ -23,12 +23,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -49,7 +54,9 @@ import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerProfil
 import com.hm.picplz.ui.screen.search_photographer.composable.RefetchButton
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -101,6 +108,25 @@ fun SearchPhotographerScreen(
             }
         }
     }
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.PartiallyExpanded,
+            skipHiddenState = true
+        )
+    )
+
+    LaunchedEffect(currentState.selectedPhotographerId) {
+        if (currentState.selectedPhotographerId != null) {
+            scope.launch {
+                scaffoldState.bottomSheetState.expand()
+            }
+        } else {
+            scope.launch {
+                scaffoldState.bottomSheetState.partialExpand()
+            }
+        }
+    }
 
     CommonBottomSheetScaffold (
         modifier = Modifier
@@ -108,6 +134,7 @@ fun SearchPhotographerScreen(
         sheetContent = {
             PhotographerListScreen()
         },
+        scaffoldState = scaffoldState
     ){
         Column(
             modifier = modifier

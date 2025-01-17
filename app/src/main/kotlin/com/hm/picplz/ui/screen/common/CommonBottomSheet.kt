@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
@@ -38,14 +39,9 @@ fun CommonBottomSheetScaffold(
     sheetPeekHeight: Dp = 30.dp,
     sheetShape: Shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
     navigationBarPadding: Boolean = false,
+    scaffoldState: BottomSheetScaffoldState,
     content: @Composable (PaddingValues) -> Unit,
-    ) {
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.PartiallyExpanded,
-            skipHiddenState = true
-        )
-    )
+) {
     val navigationBarHeight = with(LocalDensity.current) {
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
