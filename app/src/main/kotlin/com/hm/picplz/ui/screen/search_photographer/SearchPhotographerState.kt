@@ -11,6 +11,7 @@ data class SearchPhotographerState (
     val isSearchingPhotographer: Boolean = false,
     val nearbyPhotographers: FilteredPhotographers = FilteredPhotographers(),
     val randomOffsets: Map<Int, Pair<Float, Float>> = emptyMap(),
+    val selectedPhotographerId: Int? = null,
 ) {
     companion object {
         fun idle(): SearchPhotographerState {

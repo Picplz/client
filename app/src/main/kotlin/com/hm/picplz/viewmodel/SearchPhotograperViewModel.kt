@@ -182,6 +182,11 @@ class SearchPhotographerViewModel @Inject constructor(
                 val randomOffsets = generateNonOverlappingOffsets(intent.photographers)
                 _state.update { it.copy(randomOffsets = randomOffsets) }
             }
+            is SearchPhotographerIntent.SetSelectedPhotographerId -> {
+                _state.update { it.copy(
+                    selectedPhotographerId = if (state.value.selectedPhotographerId == intent.photographerId) null else intent.photographerId
+                )}
+            }
         }
     }
 

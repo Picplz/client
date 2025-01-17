@@ -22,11 +22,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -37,27 +35,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import com.hm.picplz.ui.screen.search_photographer.common.PhotographerProfile
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
 
@@ -129,6 +124,12 @@ fun SearchPhotographerScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = MainThemeColor.Gray1)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
+                    },
             ) {
                 if (currentState.isFetchingGPS && currentState.userLocation == null) {
                     Box(
@@ -257,98 +258,25 @@ fun SearchPhotographerScreen(
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
                         val entirePhotographer = currentState.nearbyPhotographers.active + currentState.nearbyPhotographers.inactive
+//                      val userLocation = currentState.userLocation
+                        val dummyUserLocation = LatLng.from(37.402960, 127.115587)
                         entirePhotographer.forEach {  ( id, name, photographerLocation, profileImageUri, isActive )  ->
-//                            val userLocation = currentState.userLocation
-                            val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-
+                            val (x, y) = currentState.randomOffsets[id] ?: return@forEach
+                            val isSelected = id == currentState.selectedPhotographerId
                             val distanceInMeters = photographerLocation?.let { location ->
                                 getDistance(dummyUserLocation, location) * 1000
                             }
-                            val formattedDistance = String.format("%.0f", distanceInMeters)
-
-                            val (x, y) = currentState.randomOffsets[id] ?: return@forEach
-                            Image(
-                                painter = rememberAsyncImagePainter(model = profileImageUri),
-                                contentDescription = "작가 위치",
-                                colorFilter = if (!isActive) ColorFilter.colorMatrix(
-                                    ColorMatrix().apply {
-                                        setToSaturation(0f)
-                                    }
-                                ) else null,
-                                modifier = Modifier
-                                    .offset(
-                                        x = x.dp,
-                                        y = y.dp
-                                    )
-                                    .size(74.dp)
-                                    .clip(CircleShape)
-                                    .border(2.dp, MainThemeColor.Black, CircleShape),
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(8.dp)
-                                    .offset(
-                                        x = x.dp,
-                                        y = y.dp
-                                    ),
-                            )
-                            Row (
-                                modifier = Modifier
-                                    .offset(
-                                        x = x.dp,
-                                        y = (y + 50).dp
-                                    )
-                                    .zIndex(1f),
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Spacer(
-                                    modifier = Modifier.width(11.dp)
-                                )
-                                Text(
-                                    text = name,
-                                    style = TextStyle(
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 12.sp,
-                                        lineHeight = 12.sp * 1.4,
-                                        letterSpacing = 0.sp
-                                    ),
-                                    color = MainThemeColor.Black
-                                )
-                                Spacer(
-                                    modifier = Modifier.width(3.dp)
-                                )
-                                if (isActive) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.active_dot),
-                                        contentDescription = "활성 상태 표시",
-                                    )
-                                } else {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.inactive_dot),
-                                        contentDescription = "활성 상태 표시",
-                                    )
+                            PhotographerProfile(
+                                name = name,
+                                profileImageUri = profileImageUri,
+                                isActive = isActive,
+                                isSelected = isSelected,
+                                offset = Offset(x, y),
+                                distance = distanceInMeters,
+                                onClick = {
+                                    viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(id))
                                 }
-                            }
-                            if (isActive && distanceInMeters !== null) {
-                                Text(
-                                    modifier = Modifier
-                                        .offset(
-                                            x = x.dp,
-                                            y = (y + 63).dp
-                                        )
-                                        .zIndex(1f),
-                                    text = "${formattedDistance}m",
-                                    style = TextStyle(
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 12.sp,
-                                        lineHeight = 124.sp * 1.4,
-                                        letterSpacing = 0.sp
-                                    ),
-                                    color = MainThemeColor.Gray4
-                                )
-                            }
+                            )
                         }
                     }
                 }
