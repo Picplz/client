@@ -1,4 +1,4 @@
-package com.hm.picplz.ui.screen.main
+package com.hm.picplz.ui.screen.feed
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,21 +12,19 @@ import com.hm.picplz.navigation.bottom_navigation.BottomNavigationBar
 import com.hm.picplz.ui.theme.MainThemeColor
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun FeedScreen(modifier: Modifier = Modifier, navController: NavHostController) {
     Scaffold(
         backgroundColor = MainThemeColor.White,
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-            )
+            BottomNavigationBar(navController = navController)
         },
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
     ) { innerPadding ->
         Text(
-            text = "메인 화면",
-            modifier = Modifier.padding(innerPadding),
+            text = "피드 화면",
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }

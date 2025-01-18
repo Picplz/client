@@ -1,4 +1,4 @@
-package com.hm.picplz.ui.screen.main
+package com.hm.picplz.ui.screen.chat
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,7 +12,7 @@ import com.hm.picplz.navigation.bottom_navigation.BottomNavigationBar
 import com.hm.picplz.ui.theme.MainThemeColor
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun ChatScreen(modifier: Modifier = Modifier, navController: NavHostController) {
     Scaffold(
         backgroundColor = MainThemeColor.White,
         bottomBar = {
@@ -25,7 +25,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             .systemBarsPadding()
     ) { innerPadding ->
         Text(
-            text = "메인 화면",
+            text = "채팅 화면",
             modifier = Modifier.padding(innerPadding),
         )
     }
