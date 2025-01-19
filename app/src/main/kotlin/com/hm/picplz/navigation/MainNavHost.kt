@@ -5,14 +5,18 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.NavHostController
 import com.hm.picplz.data.model.User
+import com.hm.picplz.ui.screen.chat.ChatScreen
+import com.hm.picplz.ui.screen.feed.FeedScreen
 import com.hm.picplz.ui.screen.main.MainScreen
+import com.hm.picplz.ui.screen.my_page.MyPageScreen
+import com.hm.picplz.ui.screen.my_page.ReservationScreen
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerScreen
-import com.hm.picplz.ui.screen.sign_up.sign_up_common.SignUpScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_client.SignUpClientScreen
+import com.hm.picplz.ui.screen.sign_up.sign_up_common.SignUpScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_common.views.SignUpCompletionScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerScreen
 import com.hm.picplz.viewmodel.MainActivityUiState
@@ -79,6 +83,26 @@ fun MainNavHost(
 
         composable("search-photographer") {
             SearchPhotographerScreen(mainNavController = navController)
+        }
+
+        composable("main") {
+            MainScreen(navController = navController)
+        }
+
+        composable("reservation") {
+            ReservationScreen(navController = navController)
+        }
+
+        composable("feed") {
+            FeedScreen(navController = navController)
+        }
+
+        composable("chat") {
+            ChatScreen(navController = navController)
+        }
+
+        composable("mypage") {
+            MyPageScreen(navController = navController)
         }
     }
 }
