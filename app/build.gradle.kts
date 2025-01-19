@@ -35,7 +35,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "${localProperties["kakao_native_app_key"]}")
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            "${localProperties["kakao_native_app_key"]}"
+        )
         buildConfigField("String", "KAKAO_REST_API_KEY", "${localProperties["kakao_rest_api_key"]}")
 
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = localProperties["kakao_native_app_key"] ?: ""
@@ -110,7 +114,7 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.compiler)
 
-   // Navigation
+    // Navigation
     implementation(libs.androidx.navigation.compose.v260)
 
     // coil
@@ -123,6 +127,10 @@ dependencies {
 
     // kakao map
     implementation(libs.kakao.maps)
+
+    // Material
+    implementation("androidx.compose.material:material:1.5.1")
+
 }
 
 apply(plugin = "dagger.hilt.android.plugin")
