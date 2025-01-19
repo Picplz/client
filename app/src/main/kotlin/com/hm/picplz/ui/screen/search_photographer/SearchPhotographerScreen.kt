@@ -23,11 +23,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,21 +49,21 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.hm.picplz.R
+import com.hm.picplz.navigation.bottom_navigation.BottomNavigationBar
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.Pretendard
-import com.hm.picplz.viewmodel.SearchPhotographerViewModel
-import kotlinx.coroutines.flow.collectLatest
-import com.hm.picplz.R
-import com.hm.picplz.data.model.Photographer
-import com.hm.picplz.data.model.dummyPhotographers
-import com.hm.picplz.data.repository.PhotographerRepository
 import com.hm.picplz.utils.LocationUtil
 import com.hm.picplz.utils.LocationUtil.getDistance
+import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import com.kakao.vectormap.LatLng
-import kotlin.math.abs
+import kotlinx.coroutines.flow.collectLatest
 
-@SuppressLint("DefaultLocale")
+@SuppressLint(
+    "DefaultLocale", "UnusedMaterialScaffoldPaddingParameter",
+    "UnusedMaterial3ScaffoldPaddingParameter"
+)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun SearchPhotographerScreen(
@@ -81,6 +83,7 @@ fun SearchPhotographerScreen(
                     permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 viewModel.handleIntent(SearchPhotographerIntent.GetCurrentLocation(context))
             }
+
             else -> {
                 Toast.makeText(
                     context,
@@ -103,6 +106,7 @@ fun SearchPhotographerScreen(
                     ) == PackageManager.PERMISSION_GRANTED -> {
                 viewModel.handleIntent(SearchPhotographerIntent.GetCurrentLocation(context))
             }
+
             else -> {
                 launcher.launch(
                     arrayOf(
@@ -114,213 +118,224 @@ fun SearchPhotographerScreen(
         }
     }
 
-    CommonBottomSheetScaffold (
-        modifier = Modifier
-            .fillMaxSize(),
-        sheetContent = {
-            PhotographerListScreen()
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = mainNavController)
         },
-    ){
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MainThemeColor.White),
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
+        CommonBottomSheetScaffold(
+            modifier = Modifier
+                .fillMaxSize(),
+            sheetContent = {
+                PhotographerListScreen()
+            },
+            sheetPeekHeight = 105.dp,
         ) {
-            Box(
-                modifier = Modifier
+            Column(
+                modifier = modifier
                     .fillMaxSize()
-                    .background(color = MainThemeColor.Gray1)
+                    .background(MainThemeColor.White),
             ) {
-                if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = MainThemeColor.Black
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "위치 정보 로딩",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MainThemeColor.Black
-                            )
-                        }
-                    }
-                } else {
-                    Row (
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, start = 15.dp, end = 15.dp)
-                        ,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 15.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.marker_map),
-                                contentDescription = "지도 표시 마커"
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = currentState.address ?: "마포구 서교동",
-                                modifier = Modifier,
-                                color = MainThemeColor.Black,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    lineHeight = 18.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(5.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = MainThemeColor.Gray1)
+                ) {
+                    if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
                         Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MainThemeColor.White,
-                                    shape = RoundedCornerShape(50.dp)
-                                )
-                                .border(
-                                    width = 1.dp,
-                                    color = MainThemeColor.Gray2,
-                                    shape = RoundedCornerShape(50.dp)
-                                ),
-                            contentAlignment = Alignment.Center,
-
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Row (
-                                modifier = Modifier
-                                    .padding(
-                                        horizontal = 15.dp,
-                                        vertical = 6.dp
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ){
-                                Text(
-                                    text = "내 위치 새로고침",
-                                    style = TextStyle(
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                        lineHeight = 14.sp * 1.4,
-                                        letterSpacing = 0.sp
-                                    ),
-                                    color = MainThemeColor.Gray4
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = MainThemeColor.Black
                                 )
-                                Spacer(modifier = Modifier.width(3.dp))
-                                Image(
-                                    painter = painterResource(id = R.drawable.arrow_rotate_left),
-                                    contentDescription = "circles"
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "위치 정보 로딩",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MainThemeColor.Black
                                 )
                             }
                         }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.circles),
-                            contentDescription = "범위 지정 이미지"
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.center_char),
-                            contentDescription = "작가 탐색 중앙 캐릭터"
-                        )
-                        currentState.nearbyPhotographers.forEach {  ( name, photographerLocation, profileImageUri )  ->
+                    } else {
+                        Row(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, start = 15.dp, end = 15.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(
+                                        horizontal = 15.dp,
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.marker_map),
+                                    contentDescription = "지도 표시 마커"
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = currentState.address ?: "마포구 서교동",
+                                    modifier = Modifier,
+                                    color = MainThemeColor.Black,
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp,
+                                        lineHeight = 18.sp * 1.4,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    maxLines = 1
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = MainThemeColor.White,
+                                        shape = RoundedCornerShape(50.dp)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = MainThemeColor.Gray2,
+                                        shape = RoundedCornerShape(50.dp)
+                                    ),
+                                contentAlignment = Alignment.Center,
+
+                                ) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = 15.dp,
+                                            vertical = 6.dp
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                ) {
+                                    Text(
+                                        text = "내 위치 새로고침",
+                                        style = TextStyle(
+                                            fontFamily = Pretendard,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            lineHeight = 14.sp * 1.4,
+                                            letterSpacing = 0.sp
+                                        ),
+                                        color = MainThemeColor.Gray4
+                                    )
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow_rotate_left),
+                                        contentDescription = "circles"
+                                    )
+                                }
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.circles),
+                                contentDescription = "범위 지정 이미지"
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.center_char),
+                                contentDescription = "작가 탐색 중앙 캐릭터"
+                            )
+                            currentState.nearbyPhotographers.forEach { (name, photographerLocation, profileImageUri) ->
 //                            val userLocation = currentState.userLocation
 //                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
 //                                from = userLocation!!,
 //                                to = photographerLocation
 //                            )
-                            val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
-                                from = dummyUserLocation,
-                                to = photographerLocation
-                            )
-                            val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
-                            val formattedDistance = String.format("%.0f", distanceInMeters)
-                            val screenWidthDp = LocalConfiguration.current.screenWidthDp
-                            val maxRadius = screenWidthDp * 0.50f
-                            val scale = maxRadius / 2f
+                                val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+                                val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
+                                    from = dummyUserLocation,
+                                    to = photographerLocation
+                                )
+                                val distanceInMeters =
+                                    getDistance(dummyUserLocation, photographerLocation) * 1000
+                                val formattedDistance = String.format("%.0f", distanceInMeters)
+                                val screenWidthDp = LocalConfiguration.current.screenWidthDp
+                                val maxRadius = screenWidthDp * 0.50f
+                                val scale = maxRadius / 2f
 
-                            Image(
-                                painter = rememberAsyncImagePainter(model = profileImageUri),
-                                contentDescription = "작가 위치",
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
-                                    )
-                                    .size(74.dp)
-                                    .clip(CircleShape)
-                                    .border(2.dp, MainThemeColor.Black, CircleShape),
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(8.dp)
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
+                                Image(
+                                    painter = rememberAsyncImagePainter(model = profileImageUri),
+                                    contentDescription = "작가 위치",
+                                    modifier = Modifier
+                                        .offset(
+                                            x = (relativeX * scale).dp,
+                                            y = -(relativeY * scale).dp
+                                        )
+                                        .size(74.dp)
+                                        .clip(CircleShape)
+                                        .border(2.dp, MainThemeColor.Black, CircleShape),
+                                )
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(8.dp)
+                                        .offset(
+                                            x = (relativeX * scale).dp,
+                                            y = -(relativeY * scale).dp
+                                        ),
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .offset(
+                                            x = (relativeX * scale).dp,
+                                            y = (-(relativeY * scale) + 50).dp
+                                        )
+                                        .zIndex(1f),
+                                    text = name,
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        lineHeight = 12.sp * 1.4,
+                                        letterSpacing = 0.sp
                                     ),
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+50).dp
-                                    )
-                                    .zIndex(1f),
-                                text = name,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 12.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Black
+                                    color = MainThemeColor.Black
 
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+63).dp
-                                    )
-                                    .zIndex(1f),
-                                text = "${formattedDistance}m",
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 124.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Gray4
-                            )
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .offset(
+                                            x = (relativeX * scale).dp,
+                                            y = (-(relativeY * scale) + 63).dp
+                                        )
+                                        .zIndex(1f),
+                                    text = "${formattedDistance}m",
+                                    style = TextStyle(
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        lineHeight = 124.sp * 1.4,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    color = MainThemeColor.Gray4
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+
     LaunchedEffect(Unit) {
         viewModel.sideEffect.collectLatest { sideEffect ->
             when (sideEffect) {

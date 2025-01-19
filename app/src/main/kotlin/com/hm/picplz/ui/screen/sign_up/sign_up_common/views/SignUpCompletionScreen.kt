@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -91,7 +90,7 @@ fun SignUpCompletionScreen(
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Column (
+                Column(
                     modifier = modifier
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -124,19 +123,19 @@ fun SignUpCompletionScreen(
                             painter = painterResource(id = R.drawable.spicky1),
                             contentDescription = "프로필 이미지",
                             modifier = Modifier
-                                .offset(x= (-80).dp, y = (-100).dp)
+                                .offset(x = (-80).dp, y = (-100).dp)
                         )
                         Image(
                             painter = painterResource(id = R.drawable.spicky2),
                             contentDescription = "프로필 이미지",
                             modifier = Modifier
-                                .offset(x= (-25).dp, y = (-90).dp)
+                                .offset(x = (-25).dp, y = (-90).dp)
                         )
                         Image(
                             painter = painterResource(id = R.drawable.spicky3),
                             contentDescription = "프로필 이미지",
                             modifier = Modifier
-                                .offset(x= 112.dp, y = 112.dp)
+                                .offset(x = 112.dp, y = 112.dp)
                         )
                     }
                     Spacer(
@@ -145,8 +144,8 @@ fun SignUpCompletionScreen(
                     )
                     Text(
                         text = buildAnnotatedString {
-                                append("${userInfo.nickname}님,\n")
-                                append("가입이 완료되었습니다!")
+                            append("${userInfo.nickname}님,\n")
+                            append("가입이 완료되었습니다!")
                         },
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
@@ -172,7 +171,10 @@ fun SignUpCompletionScreen(
             ) {
                 CommonBottomButton(
                     text = "픽플즈 시작하기",
-                    onClick = { },
+                    onClick = {
+                        // TODO: 뒤로가기에 대한 처리 필요
+                        mainNavController.navigate("main")
+                    },
                     containerColor = MainThemeColor.Black
                 )
             }
@@ -185,9 +187,11 @@ fun SignUpCompletionScreen(
                 is SignUpSideEffect.NavigateToPrev -> {
                     mainNavController.popBackStack()
                 }
+
                 is SignUpSideEffect.Navigate -> {
                     mainNavController.navigate(sideEffect.destination)
                 }
+
                 else -> {}
             }
         }
