@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.hm.picplz.ui.theme.pretendardTypography
@@ -82,8 +81,8 @@ fun RowScope.AddItem(
         },
         onClick = {
             navController.navigate(item.route) {
-                popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
+                restoreState = true
             }
         }
     )
