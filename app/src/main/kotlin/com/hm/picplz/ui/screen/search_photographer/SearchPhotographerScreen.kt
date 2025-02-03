@@ -109,11 +109,14 @@ fun SearchPhotographerScreen(
         }
     }
     val scope = rememberCoroutineScope()
+
+    val bottomSheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded,
+        skipHiddenState = true,
+    )
+
     val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.PartiallyExpanded,
-            skipHiddenState = true
-        )
+        bottomSheetState = bottomSheetState
     )
 
     LaunchedEffect(currentState.selectedPhotographerId) {
@@ -140,7 +143,9 @@ fun SearchPhotographerScreen(
         sheetContent = {
             PhotographerListScreen()
         },
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+//        sheetPeekHeight = currentState.sheetPeekHeight,
+//        sheetMaxHeight = currentState.sheetMaxHeight
     ){
         Column(
             modifier = modifier
@@ -160,6 +165,9 @@ fun SearchPhotographerScreen(
                                 null
                             )
                         )
+                        scope.launch {
+                            scaffoldState.bottomSheetState.partialExpand()
+                        }
                     },
             ) {
                 if (currentState.isFetchingGPS && currentState.userLocation == null) {

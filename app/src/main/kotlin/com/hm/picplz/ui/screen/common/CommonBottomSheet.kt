@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,10 +34,12 @@ import com.hm.picplz.ui.theme.MainThemeColor
 fun CommonBottomSheetScaffold(
     modifier: Modifier = Modifier,
     sheetContent: @Composable ColumnScope.() -> Unit,
-    sheetPeekHeight: Dp = 30.dp,
+    sheetPeekHeight: Dp? = 30.dp,
     sheetShape: Shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
     navigationBarPadding: Boolean = false,
     scaffoldState: BottomSheetScaffoldState,
+    sheetMinHeight: Dp? = 0.dp,
+    sheetMaxHeight: Dp? = Dp.Infinity,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val navigationBarHeight = with(LocalDensity.current) {
@@ -75,13 +75,18 @@ fun CommonBottomSheetScaffold(
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
+                        .heightIn(
+                            min = sheetMinHeight ?: 0.dp,
+                            max = sheetMaxHeight ?: Dp.Infinity
+                        )
                 ) {
                     sheetContent()
                 }
             }
 
         },
-        sheetPeekHeight = sheetPeekHeight + if(navigationBarPadding) navigationBarHeight else 0.dp,
+        sheetPeekHeight = sheetPeekHeight
+            ?: (30.dp + if (navigationBarPadding) navigationBarHeight else 0.dp),
         sheetShape = sheetShape,
         sheetDragHandle = null,
         content = content,
