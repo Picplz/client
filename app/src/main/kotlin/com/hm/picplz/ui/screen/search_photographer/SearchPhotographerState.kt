@@ -1,5 +1,7 @@
 package com.hm.picplz.ui.screen.search_photographer
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.hm.picplz.ui.model.FilteredPhotographers
 import com.kakao.vectormap.LatLng
 
@@ -12,6 +14,8 @@ data class SearchPhotographerState (
     val nearbyPhotographers: FilteredPhotographers = FilteredPhotographers(),
     val randomOffsets: Map<Int, Pair<Float, Float>> = emptyMap(),
     val selectedPhotographerId: Int? = null,
+    val sheetMaxHeight: Dp = 600.dp,
+    val sheetPeekHeight: Dp? = null
 ) {
     companion object {
         fun idle(): SearchPhotographerState {

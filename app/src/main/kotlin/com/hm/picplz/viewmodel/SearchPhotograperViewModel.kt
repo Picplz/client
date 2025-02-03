@@ -187,6 +187,16 @@ class SearchPhotographerViewModel @Inject constructor(
                     selectedPhotographerId = if (state.value.selectedPhotographerId == intent.photographerId) null else intent.photographerId
                 )}
             }
+            is SearchPhotographerIntent.SetSheetMaxHeight -> {
+                _state.update { it.copy(
+                    sheetMaxHeight = intent.maxHeight
+                )}
+            }
+            is SearchPhotographerIntent.SetSheetPeekHeight -> {
+                _state.update { it.copy(
+                    sheetPeekHeight = intent.peekHeight
+                )}
+            }
         }
     }
 

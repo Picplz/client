@@ -1,6 +1,7 @@
 package com.hm.picplz.ui.screen.search_photographer
 
 import android.content.Context
+import androidx.compose.ui.unit.Dp
 import com.hm.picplz.ui.model.FilteredPhotographers
 import com.hm.picplz.ui.model.Photographer
 import com.kakao.vectormap.LatLng
@@ -18,4 +19,6 @@ sealed class SearchPhotographerIntent {
     data object RefetchNearbyPhotographers : SearchPhotographerIntent()
     data class DistributeRandomOffsets(val photographers: FilteredPhotographers) : SearchPhotographerIntent()
     data class SetSelectedPhotographerId(val photographerId: Int?) : SearchPhotographerIntent()
+    data class SetSheetMaxHeight(val maxHeight: Dp) : SearchPhotographerIntent()
+    data class SetSheetPeekHeight(val peekHeight: Dp?) : SearchPhotographerIntent()
 }
