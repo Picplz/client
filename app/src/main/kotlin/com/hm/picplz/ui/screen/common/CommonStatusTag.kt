@@ -32,14 +32,15 @@ fun CommonStatusTag(
     modifier: Modifier = Modifier,
     label: String,
     icon: Painter? = null,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    isActive: Boolean? = false,
 ) {
     Row(
         modifier = modifier
             .height(25.dp)
             .border(
                 width = 1.dp,
-                color = MainThemeColor.Gray2,
+                color = if (isActive == true) MainThemeColor.Black else MainThemeColor.Gray2,
                 shape = RoundedCornerShape(20.dp)
             )
             .background(
@@ -71,23 +72,35 @@ fun CommonStatusTag(
             text = label,
             style = TextStyle(
                 fontFamily = Pretendard,
-                fontWeight = FontWeight.Normal,
+                fontWeight = if (isActive == true) FontWeight.SemiBold else FontWeight.Normal,
                 fontSize = 12.sp,
                 lineHeight = 12.sp * 1.4,
                 letterSpacing = 0.sp
             ),
-            color = MainThemeColor.Gray4
+            color = if (isActive == true) MainThemeColor.Black else MainThemeColor.Gray4
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CommonFilterChipPreview() {
+fun CommonTagTruePreview() {
     PicplzTheme {
         CommonStatusTag(
             label = "바로 촬영",
-            icon = painterResource(id = R.drawable.tag_circle)
+            icon = painterResource(id = R.drawable.tag_circle),
+            isActive = true,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CommonTagFalsePreview() {
+    PicplzTheme {
+        CommonStatusTag(
+            label = "바로 촬영",
+            icon = painterResource(id = R.drawable.tag_circle),
         )
     }
 }
