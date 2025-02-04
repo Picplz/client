@@ -120,7 +120,8 @@ fun SignUpDetailExpScreen(
                                 onClickDefaultMode = {
                                     viewModel.handleIntent(SetPhotographyExperience(chip.id))
                                 },
-                                isSelected = currentState.selectedPhotographyExperienceId === chip.id
+                                isSelected = currentState.selectedPhotographyExperienceId === chip.id,
+                                height = ChipHeight.BIG
                             )
                         }
                     }
