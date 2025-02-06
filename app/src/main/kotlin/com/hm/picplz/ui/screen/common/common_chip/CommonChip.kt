@@ -66,6 +66,7 @@ fun CommonChip(
     selectedBorderColor: Color = MainThemeColor.Black,
     unselectedTextColor: Color = MainThemeColor.Gray4,
     selectedTextColor: Color = MainThemeColor.Black,
+    backgroundColor: Color = MainThemeColor.White,
     isSelected: Boolean = false,
     onClickDefaultMode: () -> Unit = {},
     isEditable: Boolean = false,
@@ -148,6 +149,10 @@ fun CommonChip(
                         onClickDefaultMode()
                     }
                     .height(chipHeight)
+                    .background(
+                        color = backgroundColor,
+                        shape = RoundedCornerShape(5.dp)
+                    )
                     .border(
                         width = 1.dp,
                         color = if (isSelected) selectedBorderColor else unselectedBorderColor,
