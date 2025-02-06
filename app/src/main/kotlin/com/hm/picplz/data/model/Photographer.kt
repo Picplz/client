@@ -10,6 +10,8 @@ data class PhotographerEntity(
     val isActive: Boolean,
     val profileImageUri: String,
     val workingArea: String,
+    val distance: Number,
+    val followers: List<Number>,
 )
 
 typealias PhotographerResponse = PhotographerEntity

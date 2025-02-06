@@ -10,6 +10,8 @@ data class Photographer (
     val profileImageUri: String,
     val isActive: Boolean,
     val workingArea: String,
+    val distance: Number,
+    val followers: List<Number>,
 )
 
 fun PhotographerResponse.toUiModel(): Photographer {
@@ -20,6 +22,8 @@ fun PhotographerResponse.toUiModel(): Photographer {
         profileImageUri = profileImageUri,
         isActive = isActive,
         workingArea = workingArea,
+        distance = distance,
+        followers = followers,
     )
 }
 

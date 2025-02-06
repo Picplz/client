@@ -31,7 +31,9 @@ val dummyPhotographers = listOf(
         location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
-        workingArea = "마포구 서교동"
+        workingArea = "마포구 서교동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 2,
@@ -39,7 +41,9 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.412510, 127.125137),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 200,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 3,
@@ -47,7 +51,9 @@ val dummyPhotographers = listOf(
         location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 400,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 4,
@@ -55,7 +61,9 @@ val dummyPhotographers = listOf(
         location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 300,
+        followers = listOf(1, 2, 4),
     ),
     PhotographerResponse(
         id = 5,
@@ -63,7 +71,9 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.384960, 127.115587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 6,
@@ -71,7 +81,9 @@ val dummyPhotographers = listOf(
         location = null,
         profileImageUri = "https://picsum.photos/200",
         isActive = false,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 7,
@@ -79,7 +91,9 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.402960, 127.106587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 4),
     ),
     PhotographerResponse(
         id = 8,
@@ -87,7 +101,9 @@ val dummyPhotographers = listOf(
         location = LatLng.from(37.412960, 127.105587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     )
 )
 
@@ -98,7 +114,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.403960, 127.116587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 2,
@@ -106,7 +124,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.401960, 127.114587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 4),
     ),
     PhotographerResponse(
         id = 3,
@@ -114,7 +134,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.404460, 127.113587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 4,
@@ -122,7 +144,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.401460, 127.117587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 4),
     ),
     PhotographerResponse(
         id = 5,
@@ -130,7 +154,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.404960, 127.117587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 200,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 6,
@@ -138,7 +164,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.400960, 127.113587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 100,
+        followers = listOf(1, 2, 3),
     ),
     PhotographerResponse(
         id = 7,
@@ -146,7 +174,9 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.405960, 127.114587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 500,
+        followers = listOf(1, 2, 4),
     ),
     PhotographerResponse(
         id = 8,
@@ -154,6 +184,8 @@ val dummyPhotographersTwo = listOf(
         location = LatLng.from(37.400960, 127.117587),
         profileImageUri = "https://picsum.photos/200",
         isActive = true,
-        workingArea = "종로구 무악동"
+        workingArea = "종로구 무악동",
+        distance = 200,
+        followers = listOf(1, 2, 4),
     )
 )
