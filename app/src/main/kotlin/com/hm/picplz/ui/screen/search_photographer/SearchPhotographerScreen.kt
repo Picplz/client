@@ -11,7 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,47 +21,42 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.hm.picplz.ui.screen.common.CommonBottomSheetScaffold
 import com.hm.picplz.ui.theme.MainThemeColor
-import com.hm.picplz.ui.theme.Pretendard
 import com.hm.picplz.viewmodel.SearchPhotographerViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
-import com.hm.picplz.data.model.Photographer
-import com.hm.picplz.data.model.dummyPhotographers
-import com.hm.picplz.data.repository.PhotographerRepository
-import com.hm.picplz.utils.LocationUtil
+import androidx.compose.ui.layout.ContentScale
+import com.hm.picplz.ui.screen.search_photographer.composable.AddressMarker
+import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerProfile
+import com.hm.picplz.ui.screen.search_photographer.composable.RefetchButton
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
-import kotlin.math.abs
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -68,7 +64,6 @@ fun SearchPhotographerScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchPhotographerViewModel = hiltViewModel(),
     mainNavController: NavHostController,
-    tempView: Boolean = false  // 개발용 임시 파라미터
 ) {
     val context = LocalContext.current
     val currentState = viewModel.state.collectAsState().value
@@ -113,6 +108,34 @@ fun SearchPhotographerScreen(
             }
         }
     }
+    val scope = rememberCoroutineScope()
+
+    val bottomSheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded,
+        skipHiddenState = true,
+    )
+
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
+    LaunchedEffect(currentState.selectedPhotographerId) {
+        if (currentState.selectedPhotographerId != null) {
+            scope.launch {
+                scaffoldState.bottomSheetState.expand()
+            }
+        } else {
+            scope.launch {
+                scaffoldState.bottomSheetState.partialExpand()
+            }
+        }
+    }
+
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        if (scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+            viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
+        }
+    }
 
     CommonBottomSheetScaffold (
         modifier = Modifier
@@ -120,6 +143,9 @@ fun SearchPhotographerScreen(
         sheetContent = {
             PhotographerListScreen()
         },
+        scaffoldState = scaffoldState,
+//        sheetPeekHeight = currentState.sheetPeekHeight,
+//        sheetMaxHeight = currentState.sheetMaxHeight
     ){
         Column(
             modifier = modifier
@@ -130,8 +156,21 @@ fun SearchPhotographerScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = MainThemeColor.Gray1)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        viewModel.handleIntent(
+                            SearchPhotographerIntent.SetSelectedPhotographerId(
+                                null
+                            )
+                        )
+                        scope.launch {
+                            scaffoldState.bottomSheetState.partialExpand()
+                        }
+                    },
             ) {
-                if (!tempView && (currentState.isFetchingGPS && currentState.userLocation == null)) {
+                if (currentState.isFetchingGPS && currentState.userLocation == null) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -155,80 +194,19 @@ fun SearchPhotographerScreen(
                     Row (
                         modifier = modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, start = 15.dp, end = 15.dp)
+                            .padding(top = 10.dp, start = 5.dp, end = 3.dp)
                         ,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 15.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.marker_map),
-                                contentDescription = "지도 표시 마커"
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = currentState.address ?: "마포구 서교동",
-                                modifier = Modifier,
-                                color = MainThemeColor.Black,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    lineHeight = 18.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MainThemeColor.White,
-                                    shape = RoundedCornerShape(50.dp)
-                                )
-                                .border(
-                                    width = 1.dp,
-                                    color = MainThemeColor.Gray2,
-                                    shape = RoundedCornerShape(50.dp)
-                                ),
-                            contentAlignment = Alignment.Center,
-
-                        ) {
-                            Row (
-                                modifier = Modifier
-                                    .padding(
-                                        horizontal = 15.dp,
-                                        vertical = 6.dp
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ){
-                                Text(
-                                    text = "내 위치 새로고침",
-                                    style = TextStyle(
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                        lineHeight = 14.sp * 1.4,
-                                        letterSpacing = 0.sp
-                                    ),
-                                    color = MainThemeColor.Gray4
-                                )
-                                Spacer(modifier = Modifier.width(3.dp))
-                                Image(
-                                    painter = painterResource(id = R.drawable.arrow_rotate_left),
-                                    contentDescription = "circles"
-                                )
+                        AddressMarker(
+                            address = currentState.address
+                        )
+                        RefetchButton (
+                            onClick = {
+                                viewModel.handleIntent(SearchPhotographerIntent.RefetchNearbyPhotographers)
                             }
-                        }
+                        )
                     }
                     Box(
                         modifier = Modifier
@@ -236,84 +214,33 @@ fun SearchPhotographerScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
-                            painter = painterResource(R.drawable.circles),
-                            contentDescription = "범위 지정 이미지"
+                            painter = painterResource(R.drawable.multicircle),
+                            contentDescription = "범위 지정 이미지",
+                            contentScale = ContentScale.FillHeight
                         )
                         Image(
                             painter = painterResource(id = R.drawable.center_char),
                             contentDescription = "작가 탐색 중앙 캐릭터"
                         )
-                        currentState.nearbyPhotographers.forEach {  ( name, photographerLocation, profileImageUri )  ->
-//                            val userLocation = currentState.userLocation
-//                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
-//                                from = userLocation!!,
-//                                to = photographerLocation
-//                            )
-                            val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-                            val (relativeX, relativeY) = LocationUtil.calculateRelativeDistance(
-                                from = dummyUserLocation,
-                                to = photographerLocation
-                            )
-                            val distanceInMeters = getDistance(dummyUserLocation, photographerLocation) * 1000
-                            val formattedDistance = String.format("%.0f", distanceInMeters)
-                            val screenWidthDp = LocalConfiguration.current.screenWidthDp
-                            val maxRadius = screenWidthDp * 0.50f
-                            val scale = maxRadius / 2f
-
-                            Image(
-                                painter = rememberAsyncImagePainter(model = profileImageUri),
-                                contentDescription = "작가 위치",
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
-                                    )
-                                    .size(74.dp)
-                                    .clip(CircleShape)
-                                    .border(2.dp, MainThemeColor.Black, CircleShape),
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(8.dp)
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = -(relativeY * scale).dp
-                                    ),
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+50).dp
-                                    )
-                                    .zIndex(1f),
-                                text = name,
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 12.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Black
-
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .offset(
-                                        x = (relativeX * scale).dp,
-                                        y = (-(relativeY * scale)+63).dp
-                                    )
-                                    .zIndex(1f),
-                                text = "${formattedDistance}m",
-                                style = TextStyle(
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    lineHeight = 124.sp * 1.4,
-                                    letterSpacing = 0.sp
-                                ),
-                                color = MainThemeColor.Gray4
+                        val entirePhotographer = currentState.nearbyPhotographers.active + currentState.nearbyPhotographers.inactive
+                        // val userLocation = currentState.userLocation
+                        val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+                        entirePhotographer.forEach {  ( id, name, photographerLocation, profileImageUri, isActive )  ->
+                            val (x, y) = currentState.randomOffsets[id] ?: return@forEach
+                            val isSelected = id == currentState.selectedPhotographerId
+                            val distanceInMeters = photographerLocation?.let { location ->
+                                getDistance(dummyUserLocation, location) * 1000
+                            }
+                            PhotographerProfile(
+                                name = name,
+                                profileImageUri = profileImageUri,
+                                isActive = isActive,
+                                isSelected = isSelected,
+                                offset = Offset(x, y),
+                                distance = distanceInMeters,
+                                onClick = {
+                                    viewModel.handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(id))
+                                }
                             )
                         }
                     }

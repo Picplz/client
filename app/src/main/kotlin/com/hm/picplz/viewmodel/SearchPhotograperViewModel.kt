@@ -18,27 +18,21 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.LocationListener
-import com.hm.picplz.data.model.Photographer
-import com.hm.picplz.data.model.dummyPhotographers
 import com.hm.picplz.data.repository.PhotographerRepository
-import com.hm.picplz.data.repository.PhotographerRepositoryImpl
-import com.hm.picplz.data.source.PhotographerServiceImpl
-import com.hm.picplz.data.source.PhotographerSourceImpl
+import com.hm.picplz.ui.model.FilteredPhotographers
 import com.hm.picplz.ui.screen.search_photographer.SearchPhotographerSideEffect
-import com.hm.picplz.utils.LocationUtil.getDistance
+import com.hm.picplz.utils.LocationUtil.calcurateScreenDistance
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.random.Random
 
 @HiltViewModel
 class SearchPhotographerViewModel @Inject constructor(
-    private val photographerRepository: PhotographerRepository
+    private val photographerRepository: PhotographerRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _state = MutableStateFlow(SearchPhotographerState.idle())
     val state : StateFlow<SearchPhotographerState> get() = _state
@@ -47,7 +41,7 @@ class SearchPhotographerViewModel @Inject constructor(
     val sideEffect: SharedFlow<SearchPhotographerSideEffect> get() = _sideEffect
 
     init {
-        handleIntent(SearchPhotographerIntent.FetchPhotographers)
+        handleIntent(SearchPhotographerIntent.FetchNearbyPhotographers)
     }
 
     private val kakaoSource = KakaoMapSource()
@@ -156,23 +150,52 @@ class SearchPhotographerViewModel @Inject constructor(
                 _state.update { it.copy(isSearchingPhotographer = intent.isSearchingPhotographer) }
             }
             is SearchPhotographerIntent.SetNearbyPhotographers -> {
-                _state.update { it.copy(nearbyPhotographers = intent.photographers)}
+                _state.update { it.copy(nearbyPhotographers = intent.nearbyPhotographers)}
             }
-            is SearchPhotographerIntent.FetchPhotographers,
-            is SearchPhotographerIntent.RefreshPhotographers -> {
+            is SearchPhotographerIntent.FetchNearbyPhotographers,
+            is SearchPhotographerIntent.RefetchNearbyPhotographers -> {
                 viewModelScope.launch {
-                    photographerRepository.getPhotographers()
-                        .onSuccess { photographers ->
-                            val nearbyPhotographers = filteredPhotographers(photographers)
-                            _state.update { it.copy(
-                                nearbyPhotographers = nearbyPhotographers,
-                                isSearchingPhotographer = false
-                            )}
+//                    val userLocation = state.value.userLocation ?: return@launch
+                    val dummyUserLocation = LatLng.from(37.402960, 127.115587)
+//                    val userAddress = state.value.address ?: return@launch
+                    val dummyUserAddress = "종로구 무악동"
+                    handleIntent(SearchPhotographerIntent.SetSelectedPhotographerId(null))
+                    handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(true))
+                    photographerRepository.getNearbyPhotographers(
+                        userLocation = dummyUserLocation,
+                        distanceLimit = 2,
+                        countLimit = 5,
+                        userAddress = dummyUserAddress,
+                    )
+                        .onSuccess { nearbyPhotographers ->
+                            handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
+                            handleIntent(SearchPhotographerIntent.SetNearbyPhotographers(nearbyPhotographers))
+                            handleIntent(SearchPhotographerIntent.DistributeRandomOffsets(nearbyPhotographers))
                         }
                         .onFailure { error ->
+                            handleIntent(SearchPhotographerIntent.SetIsSearchingPhotographer(false))
                             Log.e("FetchPhotographers", "작가 목록 로딩 실패", error)
                         }
                 }
+            }
+            is SearchPhotographerIntent.DistributeRandomOffsets -> {
+                val randomOffsets = generateNonOverlappingOffsets(intent.photographers)
+                _state.update { it.copy(randomOffsets = randomOffsets) }
+            }
+            is SearchPhotographerIntent.SetSelectedPhotographerId -> {
+                _state.update { it.copy(
+                    selectedPhotographerId = if (state.value.selectedPhotographerId == intent.photographerId) null else intent.photographerId
+                )}
+            }
+            is SearchPhotographerIntent.SetSheetMaxHeight -> {
+                _state.update { it.copy(
+                    sheetMaxHeight = intent.maxHeight
+                )}
+            }
+            is SearchPhotographerIntent.SetSheetPeekHeight -> {
+                _state.update { it.copy(
+                    sheetPeekHeight = intent.peekHeight
+                )}
             }
         }
     }
@@ -185,14 +208,112 @@ class SearchPhotographerViewModel @Inject constructor(
         locationListeners.clear()
     }
 
-    private fun filteredPhotographers(photographers: List<Photographer>): List<Photographer> {
-//        val userLocation = _state.value.userLocation ?: return emptyList()
-        val dummyUserLocation = LatLng.from(37.402960, 127.115587)
-        val distanceLimit = 2
+    class OffsetGenerationFailedException : Exception("전체 위치 생성 최종 실패")
 
-        return photographers.filter { (_, location, _ ) ->
-            val distance = getDistance(dummyUserLocation, location)
-            distance <= distanceLimit
+    private fun generateNonOverlappingOffsets(photographers: FilteredPhotographers): Map<Int, Pair<Float, Float>> {
+        val maxAttempts = 1000
+
+        for (attempt in 1..maxAttempts) {
+            try {
+                return tryGenerateOffsets(photographers)
+            } catch (e: OffsetGenerationException) {
+                continue
+            }
         }
+
+        throw OffsetGenerationFailedException()
+    }
+
+    private class OffsetGenerationException : Exception("개별 위치 생성 실패")
+
+
+    private fun tryGenerateOffsets(photographers: FilteredPhotographers): Map<Int, Pair<Float, Float>> {
+        val offsets = mutableMapOf<Int, Pair<Float, Float>>()
+        val minDistance = 110f
+
+        val innerAreaRatio = 0.75f
+        val outerAreaRatio = 0.93f
+
+        val maxSingleAttempts = 100
+
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels / displayMetrics.density
+        val padding = 40f
+
+        val maxOffsetX = (screenWidth - padding * 2) / 2
+        val innerCircleMaxOffsetX = maxOffsetX * innerAreaRatio
+        val outerCircleMinOffsetX = maxOffsetX * outerAreaRatio
+
+        val center = Pair(0f, 0f)
+
+        fun generateOffset(): Pair<Float, Float> {
+            return Pair(
+                (Random.nextFloat() * 2 - 1) * maxOffsetX,
+                (Random.nextFloat() * 2 - 1) * maxOffsetX
+            )
+        }
+
+        if (photographers.inactive.isEmpty()) {
+            photographers.active.forEachIndexed{ index, photographer ->
+                var newOffset: Pair<Float, Float>
+                var attempts = 0
+
+                do {
+                    attempts++
+                    newOffset = generateOffset()
+
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxOffsetX) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX)
+                )
+                offsets[photographer.id] = newOffset
+            }
+        } else {
+            photographers.active.forEachIndexed { index, photographer ->
+                var attempts = 0
+                var newOffset: Pair<Float, Float>
+
+                do {
+                    attempts++
+                    newOffset = generateOffset()
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) < minDistance) ||
+                    (index < 3 && calcurateScreenDistance(center, newOffset) > innerCircleMaxOffsetX) ||
+                    (index >= 3 && calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX)
+                )
+                offsets[photographer.id] = newOffset
+            }
+            photographers.inactive.forEach { photographer ->
+                var newOffset: Pair<Float, Float>
+                var attempts = 0
+                do {
+                    attempts++
+                    newOffset = generateOffset()
+                    if (attempts >= maxSingleAttempts) {
+                        throw OffsetGenerationException()
+                    }
+                } while (
+                    offsets.values.any { existingOffset ->
+                        calcurateScreenDistance(existingOffset, newOffset) < minDistance
+                    } ||
+                    calcurateScreenDistance(center, newOffset) < outerCircleMinOffsetX
+                )
+                offsets[photographer.id] = newOffset
+            }
+        }
+        return offsets
     }
 }

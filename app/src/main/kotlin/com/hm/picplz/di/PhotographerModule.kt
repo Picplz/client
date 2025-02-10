@@ -2,8 +2,8 @@ package com.hm.picplz.di
 
 import com.hm.picplz.data.repository.PhotographerRepository
 import com.hm.picplz.data.repository.PhotographerRepositoryImpl
-import com.hm.picplz.data.source.PhotographerService
-import com.hm.picplz.data.source.PhotographerServiceImpl
+import com.hm.picplz.data.service.PhotographerService
+import com.hm.picplz.data.service.PhotographerServiceImpl
 import com.hm.picplz.data.source.PhotographerSource
 import com.hm.picplz.data.source.PhotographerSourceImpl
 import dagger.Binds

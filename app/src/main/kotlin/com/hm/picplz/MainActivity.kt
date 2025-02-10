@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
@@ -83,8 +82,6 @@ class MainActivity : ComponentActivity() {
                 animatorSet.start()
             }
         }
-
-        enableEdgeToEdge()
 
         /** 2초 안에 뒤로가기 두번 입력 시 종료 **/
         onBackPressedDispatcher.addCallback(this) {

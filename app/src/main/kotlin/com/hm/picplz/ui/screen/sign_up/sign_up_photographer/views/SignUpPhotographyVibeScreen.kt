@@ -145,7 +145,8 @@ fun SignUpPhotographyVibeScreen(
                                 onEndEdit = {
                                     focusManager.clearFocus()
                                     viewModel.handleIntent(SetEditingChipId(null))
-                                }
+                                },
+                                height = ChipHeight.BIG
                             )
                         }
                         CommonChip(
@@ -158,7 +159,8 @@ fun SignUpPhotographyVibeScreen(
                             onAdd = {value ->
                                 viewModel.handleIntent(AddVibeChip(value))
                                 viewModel.handleIntent(SetEditingChipId(null))
-                            }
+                            },
+                            height = ChipHeight.BIG
                         )
                     }
                 }

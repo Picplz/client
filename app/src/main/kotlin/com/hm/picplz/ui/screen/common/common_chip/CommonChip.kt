@@ -51,6 +51,11 @@ import com.hm.picplz.viewmodel.common.CommonChipViewModel
 import java.util.UUID
 import androidx.compose.ui.text.input.TextFieldValue
 
+enum class ChipHeight {
+    MEDIUM,
+    BIG
+}
+
 @Composable
 fun CommonChip(
     initialMode: ChipMode = DEFAULT,
@@ -69,6 +74,7 @@ fun CommonChip(
     isEditing: Boolean = false,
     onEdit: () -> Unit = {},
     onEndEdit: () -> Unit = {},
+    height: ChipHeight? = ChipHeight.MEDIUM,
 ) {
 
     val currentState = viewModel.state.collectAsState().value
@@ -129,6 +135,11 @@ fun CommonChip(
         }
     }
 
+    val chipHeight = when(height ?: ChipHeight.MEDIUM) {
+        ChipHeight.MEDIUM -> 30.dp
+        ChipHeight.BIG -> 40.dp
+    }
+
     when (currentState.chipMode) {
         DEFAULT -> {
             Row(
@@ -136,7 +147,7 @@ fun CommonChip(
                     .clickable {
                         onClickDefaultMode()
                     }
-                    .height(40.dp)
+                    .height(chipHeight)
                     .border(
                         width = 1.dp,
                         color = if (isSelected) selectedBorderColor else unselectedBorderColor,
@@ -184,7 +195,7 @@ fun CommonChip(
             Row(
                 modifier = Modifier
                     .clickable { onEdit() }
-                    .height(40.dp)
+                    .height(chipHeight)
                     .border(
                         width = 1.dp,
                         color = MainThemeColor.Gray3,
@@ -252,7 +263,7 @@ fun CommonChip(
                                 color = if (isSelected) selectedBorderColor else unselectedBorderColor,
                                 shape = RoundedCornerShape(5.dp)
                             )
-                            .height(40.dp)
+                            .height(chipHeight)
                             .width(currentState.textFieldWidth + 24.dp)
                             .padding(horizontal = 12.dp),
                     ) {
@@ -290,7 +301,7 @@ fun CommonChipPreviewFalse() {
 @Composable
 fun CommonChipPreviewAdd() {
     PicplzTheme {
-        CommonChip(initialMode = ADD)
+        CommonChip(initialMode = ADD, height = ChipHeight.BIG)
     }
 }
 
@@ -298,7 +309,7 @@ fun CommonChipPreviewAdd() {
 @Composable
 fun CommonChipPreviewEdit() {
     PicplzTheme {
-        CommonChip(initialMode = EDIT)
+        CommonChip(initialMode = EDIT, height = ChipHeight.BIG)
     }
 }
 
@@ -306,6 +317,6 @@ fun CommonChipPreviewEdit() {
 @Composable
 fun CommonChipPreviewFalseEditable() {
     PicplzTheme {
-        CommonChip(label = "공주 감성", isSelected = false, isEditable = true)
+        CommonChip(label = "공주 감성", isSelected = false, isEditable = true, height = ChipHeight.BIG)
     }
 }
