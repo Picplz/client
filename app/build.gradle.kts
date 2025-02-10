@@ -130,7 +130,6 @@ dependencies {
 
     // Material
     implementation("androidx.compose.material:material:1.5.1")
-
 }
 
 apply(plugin = "dagger.hilt.android.plugin")

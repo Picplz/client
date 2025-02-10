@@ -19,19 +19,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.animation.doOnEnd
-import com.hm.picplz.ui.theme.PicplzTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.hm.picplz.navigation.MainNavHost
+import com.hm.picplz.ui.theme.PicplzTheme
 import com.hm.picplz.viewmodel.MainActivityUiState
-import com.hm.picplz.viewmodel.MainActivityUiState.*
+import com.hm.picplz.viewmodel.MainActivityUiState.Loading
 import com.hm.picplz.viewmodel.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                     else -> false
                 }
             }
-            setOnExitAnimationListener{ screen ->
+            setOnExitAnimationListener { screen ->
                 val fadeOut = ObjectAnimator.ofFloat(
                     screen.iconView,
                     View.ALPHA,

@@ -40,6 +40,7 @@ fun MainNavHost(
         modifier = modifier,
     ) {
         composable("login") { LoginScreen(navController = navController) }
+//        composable("login") { DetailPhotographerScreen(navController = navController) }
         composable("main") { MainScreen(navController = navController) }
         composable("sign-up") { SignUpScreen(mainNavController = navController) }
         composable("sign-up-client") { backStackEntry ->

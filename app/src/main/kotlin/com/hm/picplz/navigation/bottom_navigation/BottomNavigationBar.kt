@@ -25,6 +25,7 @@ import com.hm.picplz.ui.theme.pretendardTypography
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
+//    TODO: UserType에 따라 네비게이션바 아이템 분기처리
     val items = listOf(
         BottomNavigationItem.Main,
         BottomNavigationItem.Map,
@@ -32,6 +33,13 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationItem.Chat,
         BottomNavigationItem.MyPage,
     )
+//    val items = listOf(
+//        BottomNavigationItem.Main,
+//        BottomNavigationItem.Reservation,
+//        BottomNavigationItem.Feed,
+//        BottomNavigationItem.Chat,
+//        BottomNavigationItem.MyPage,
+//    )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
