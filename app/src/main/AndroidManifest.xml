@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Picplz"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="${KAKAO_NATIVE_APP_KEY}"/>
+            android:value="${KAKAO_NATIVE_APP_KEY}" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,6 +30,17 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="172.30.1.48"
+                    android:port="3000"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
     </application>

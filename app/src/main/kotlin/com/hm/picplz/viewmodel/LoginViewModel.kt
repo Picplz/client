@@ -23,6 +23,18 @@ class LoginViewModel : ViewModel() {
                     _sideEffect.emit(LoginSideEffect.NavigateToKaKao)
                 }
             }
+
+            is LoginIntent.LoginSuccess -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(LoginSideEffect.LoginSuccess(intent.token))
+                }
+            }
+
+            is LoginIntent.LoginFailed -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(LoginSideEffect.LoginFailed)
+                }
+            }
         }
     }
 }

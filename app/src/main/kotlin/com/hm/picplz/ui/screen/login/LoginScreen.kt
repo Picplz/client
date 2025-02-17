@@ -1,6 +1,11 @@
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -83,9 +88,7 @@ fun LoginScreen(
     val pageTexts = listOf("내 인생샷 찍어줄\n픽플과 위치기반 매칭!", "인생샷 맛집\n핫플레이스 추천", "나의 인생 프사,\n이젠 픽플즈가 함께")
 //    FIXME: 이미지 리소스 대체 필요
     val pageImages = listOf(R.drawable.user_deselected, R.drawable.user_selected, R.drawable.logo)
-    val pagerState = rememberPagerState(
-        pageCount = { pageTexts.size }
-    )
+    val pagerState = rememberPagerState(pageCount = { pageTexts.size })
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -130,8 +133,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    Text(
-                        text = text,
+                    Text(text = text,
                         style = pretendardTypography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -144,8 +146,7 @@ fun LoginScreen(
                                 layout(placeable.width, placeable.height) {
                                     placeable.place(0, 0)
                                 }
-                            }
-                    )
+                            })
 
                     if (page == 2) {
                         Spacer(modifier = Modifier.height(66.dp))
@@ -189,8 +190,7 @@ fun LoginScreen(
                             shape = RoundedCornerShape(5.dp)
                         ) {
                             Text(
-                                text = "지도 기능 테스트",
-                                style = buttonText
+                                text = "지도 기능 테스트", style = buttonText
                             )
                         }
                     }
@@ -207,28 +207,43 @@ fun LoginScreen(
                     repeat(pagerState.pageCount) { iteration ->
                         val color =
                             if (pagerState.currentPage == iteration) MainThemeColor.Black else MainThemeColor.White
-                        Box(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .border(1.dp, MainThemeColor.Black, CircleShape)
-                                .size(12.dp)
-                                .clickable {
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(
-                                            page = iteration,
-                                            animationSpec = tween(durationMillis = 400) // Adjust the duration as needed
-                                        )
-                                    }
+                        Box(modifier = Modifier
+                            .padding(5.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .border(1.dp, MainThemeColor.Black, CircleShape)
+                            .size(12.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(
+                                        page = iteration,
+                                        animationSpec = tween(durationMillis = 400) // Adjust the duration as needed
+                                    )
                                 }
-                        )
+                            })
                     }
                 }
 
             }
         }
     }
+
+// 🔹 ActivityResultLauncher 설정 (카카오 로그인 결과 받기)
+    val authLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = result.data
+            if (result.resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                uri?.let {
+                    val token = it.getQueryParameter("accessToken") // ✅ 카카오에서 받은 액세스 토큰
+                    if (token != null) {
+                        viewModel.handleIntent(LoginIntent.LoginSuccess(token)) // 🔹 서버로 전달
+                    } else {
+                        viewModel.handleIntent(LoginIntent.LoginFailed)
+                    }
+                }
+            }
+        }
 
     LaunchedEffect(Unit) {
         viewModel.sideEffect.collectLatest { sideEffect ->
@@ -239,6 +254,12 @@ fun LoginScreen(
                      *  로그인 성공한 경우 -> 로그인 정보를 가지고 메인 페이지로 이동
                      *  로그인 정보가 없는 경우 -> 카카오와 연동된 회원가입 -> 회원가입 정보를 가지고 sign-up 스크린으로 이동
                      */
+                    val kakaoLoginUrl = "http://3.36.183.87:8080/api/v1/oauth2/authorization/kakao"
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(kakaoLoginUrl))
+
+                    // 🔹 로그인 화면으로 이동
+                    authLauncher.launch(intent)
+
                     Toast.makeText(context, "카카오 로그인", Toast.LENGTH_LONG).show()
                     Handler(Looper.getMainLooper()).postDelayed({
                         navController.navigate("sign-up") {
@@ -250,10 +271,21 @@ fun LoginScreen(
                         }
                     }, 500)
                 }
+
+                is LoginSideEffect.LoginSuccess -> {
+                    Toast.makeText(context, "로그인 성공! 토큰: ${sideEffect.token}", Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                is LoginSideEffect.LoginFailed -> {
+                    Toast.makeText(context, "로그인 실패!", Toast.LENGTH_LONG).show()
+
+                }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
