@@ -12,6 +12,7 @@ data class PhotographerEntity(
     val workingArea: String,
     val distance: Number,
     val followers: List<Number>,
+    val socialAccount: String?,
 )
 
 typealias PhotographerResponse = PhotographerEntity

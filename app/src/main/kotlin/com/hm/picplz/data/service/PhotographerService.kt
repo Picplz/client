@@ -34,6 +34,7 @@ val dummyPhotographers = listOf(
         workingArea = "마포구 서교동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 2,
@@ -44,6 +45,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 200,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 3,
@@ -54,6 +56,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 400,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 4,
@@ -64,6 +67,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 300,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 5,
@@ -74,6 +78,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 6,
@@ -84,6 +89,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 7,
@@ -94,6 +100,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 8,
@@ -104,6 +111,7 @@ val dummyPhotographers = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     )
 )
 
@@ -117,6 +125,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 2,
@@ -127,6 +136,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 3,
@@ -137,6 +147,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 4,
@@ -147,6 +158,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 5,
@@ -157,6 +169,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 200,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 6,
@@ -167,6 +180,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 100,
         followers = listOf(1, 2, 3),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 7,
@@ -177,6 +191,7 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 500,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     ),
     PhotographerResponse(
         id = 8,
@@ -187,5 +202,6 @@ val dummyPhotographersTwo = listOf(
         workingArea = "종로구 무악동",
         distance = 200,
         followers = listOf(1, 2, 4),
+        socialAccount= "@account",
     )
 )

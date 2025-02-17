@@ -142,6 +142,7 @@ fun PhotographerCardPreview() {
             workingArea = "마포구 서교동",
             distance = 100,
             followers = listOf(1, 2, 3),
+            socialAccount = "@account",
         )
     )
 }

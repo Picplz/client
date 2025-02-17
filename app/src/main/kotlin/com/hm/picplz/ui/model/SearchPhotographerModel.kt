@@ -12,6 +12,7 @@ data class Photographer (
     val workingArea: String,
     val distance: Number,
     val followers: List<Number>,
+    val socialAccount: String,
 )
 
 fun PhotographerResponse.toUiModel(): Photographer {
@@ -24,6 +25,7 @@ fun PhotographerResponse.toUiModel(): Photographer {
         workingArea = workingArea,
         distance = distance,
         followers = followers,
+        socialAccount = socialAccount ?: "",
     )
 }
 
