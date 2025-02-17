@@ -72,40 +72,22 @@ fun PhotographerCard (
                             letterSpacing = 0.sp,
                         )
                     )
-                    Text(
-                        text = "${photographer.distance}m",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MainThemeColor.Gray4
+                    DistanceText(
+                        distance = photographer.distance.toString(),
+                        duration = "도보 3분"
                     )
                 }
-//                if (photographer.isActive) {
+                if (photographer.isActive) {
                     ActiveStatusBadge(text = "바로 촬영")
-//                }
-            }
-            LazyRow(
-                modifier = Modifier
-                    .height(30.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                val vibeTags = listOf(
-                    "#을지로 감성",
-                    "#키치 감성",
-                    "#MZ 감성",
-                    "#퇴폐 감성"
-                )
-
-                itemsIndexed(vibeTags) { index, vibeTag ->
-                    CommonChip(
-                        id = index.toString(),
-                        label = vibeTag,
-                        initialMode = ChipMode.DEFAULT,
-                        isEditable = false,
-                        height = ChipHeight.MEDIUM,
-                        backgroundColor = MainThemeColor.Gray2,
-                        unselectedBorderColor = MainThemeColor.Gray2,
-                    )
                 }
             }
+            val vibeTags = listOf(
+                "#을지로 감성",
+                "#키치 감성",
+                "#MZ 감성",
+                "#퇴폐 감성"
+            )
+            VibeTags(tags = vibeTags)
         }
     }
 }
