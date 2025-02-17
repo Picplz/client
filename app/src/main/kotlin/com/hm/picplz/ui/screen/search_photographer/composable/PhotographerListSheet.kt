@@ -50,7 +50,7 @@ private val vibeTags = listOf(
 )
 
 @Composable
-fun PhotographerListScreen(
+fun PhotographerListSheet(
     viewModel: SearchPhotographerViewModel = hiltViewModel()
 ) {
     val currentState = viewModel.state.collectAsState().value
@@ -117,6 +117,6 @@ fun PhotographerListScreen(
 @Preview(showBackground = true)
 @Composable
 fun PhotographerListScreenPreview() {
-    PhotographerListScreen()
+    PhotographerListSheet()
 }
 
