@@ -35,6 +35,7 @@ val dummyPhotographers = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 2,
@@ -46,6 +47,7 @@ val dummyPhotographers = listOf(
         distance = 200,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 3,
@@ -57,6 +59,7 @@ val dummyPhotographers = listOf(
         distance = 400,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 4,
@@ -68,6 +71,7 @@ val dummyPhotographers = listOf(
         distance = 300,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 5,
@@ -79,6 +83,7 @@ val dummyPhotographers = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 6,
@@ -90,6 +95,7 @@ val dummyPhotographers = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 7,
@@ -101,6 +107,7 @@ val dummyPhotographers = listOf(
         distance = 100,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 8,
@@ -112,6 +119,7 @@ val dummyPhotographers = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     )
 )
 
@@ -126,6 +134,7 @@ val dummyPhotographersTwo = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 2,
@@ -137,6 +146,7 @@ val dummyPhotographersTwo = listOf(
         distance = 100,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 3,
@@ -148,6 +158,7 @@ val dummyPhotographersTwo = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 4,
@@ -159,6 +170,7 @@ val dummyPhotographersTwo = listOf(
         distance = 100,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 5,
@@ -170,6 +182,7 @@ val dummyPhotographersTwo = listOf(
         distance = 200,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 6,
@@ -181,6 +194,7 @@ val dummyPhotographersTwo = listOf(
         distance = 100,
         followers = listOf(1, 2, 3),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 7,
@@ -192,6 +206,7 @@ val dummyPhotographersTwo = listOf(
         distance = 500,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     ),
     PhotographerResponse(
         id = 8,
@@ -203,5 +218,6 @@ val dummyPhotographersTwo = listOf(
         distance = 200,
         followers = listOf(1, 2, 4),
         socialAccount= "@account",
+        portfolioPhotos = List(5) { "https://picsum.photos/100" },
     )
 )
