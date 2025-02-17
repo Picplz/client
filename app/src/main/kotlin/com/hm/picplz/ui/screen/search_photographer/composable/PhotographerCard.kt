@@ -79,26 +79,7 @@ fun PhotographerCard (
                     )
                 }
 //                if (photographer.isActive) {
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .height(20.dp)
-                    ){
-                        Image(
-                            painter = painterResource(id = R.drawable.active_dot),
-                            contentDescription = "활성 상태 표시",
-                        )
-                        Text(
-                            text = "바로 촬영",
-                            color = MainThemeColor.Olive,
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp,
-                                lineHeight = 12.sp * 1.4,
-                                letterSpacing = 0.sp
-                            )
-                        )
-                    }
+                    ActiveStatusBadge(text = "바로 촬영")
 //                }
             }
             LazyRow(
