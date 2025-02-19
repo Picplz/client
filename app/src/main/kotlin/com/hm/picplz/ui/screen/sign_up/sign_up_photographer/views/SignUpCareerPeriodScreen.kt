@@ -1,7 +1,6 @@
 package com.hm.picplz.ui.screen.sign_up.sign_up_photographer.views
 
 import CommonOutlinedTextField
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,8 +27,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.hm.picplz.ui.screen.common.CommonBottomButton
+import com.hm.picplz.ui.screen.common.CommonNumberSelector
 import com.hm.picplz.ui.screen.common.CommonTopBar
-import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerIntent.NavigateToPrev
+import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SelectorType
+import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerIntent.*
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerSideEffect
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.PicplzTheme
@@ -48,7 +49,7 @@ fun SignUpCareerPeriodScreen(
         modifier = Modifier
             .fillMaxSize(),
         containerColor = MainThemeColor.White
-    ) {innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = modifier
                 .padding(innerPadding)
@@ -94,7 +95,7 @@ fun SignUpCareerPeriodScreen(
                     ) {
                         CommonOutlinedTextField(
                             modifier = Modifier.width(85.dp),
-                            value = "",
+                            value = currentState.careerYear?.toString() ?: "",
                             onValueChange = {},
                             placeholder = "0",
                             imeAction = ImeAction.Next,
@@ -108,6 +109,9 @@ fun SignUpCareerPeriodScreen(
                                 textAlign = TextAlign.Center,
                                 color = MainThemeColor.Gray
                             ),
+                            onClick = {
+                                viewModel.handleIntent(SetSelectedSelector(SelectorType.YEAR))
+                            },
                         )
                         Spacer(modifier = modifier.width(7.dp))
                         Text(
@@ -117,7 +121,7 @@ fun SignUpCareerPeriodScreen(
                         Spacer(modifier = modifier.width(20.dp))
                         CommonOutlinedTextField(
                             modifier = Modifier.width(85.dp),
-                            value = "0",
+                            value = currentState.careerMonth?.toString() ?: "",
                             onValueChange = {},
                             placeholder = "0",
                             imeAction = ImeAction.Next,
@@ -131,6 +135,9 @@ fun SignUpCareerPeriodScreen(
                                 textAlign = TextAlign.Center,
                                 color = MainThemeColor.Gray
                             ),
+                            onClick = {
+                                viewModel.handleIntent(SetSelectedSelector(SelectorType.MONTH))
+                            },
                         )
                         Spacer(modifier = modifier.width(7.dp))
                         Text(
@@ -155,7 +162,26 @@ fun SignUpCareerPeriodScreen(
             }
         }
     }
-
+    CommonNumberSelector(
+        currentValue = currentState.careerYear,
+        onValueSelected = { year ->
+            viewModel.handleIntent(SetCareerYear(year))
+            viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE))
+        },
+        maxValue = 50,
+        visible = currentState.selectedSelector === SelectorType.YEAR,
+        onDismiss = { viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE)) }
+    )
+    CommonNumberSelector(
+        currentValue = currentState.careerMonth,
+        onValueSelected = { month ->
+            viewModel.handleIntent(SetCareerMonth(month))
+            viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE))
+        },
+        maxValue = 12,
+        visible = currentState.selectedSelector === SelectorType.MONTH,
+        onDismiss = { viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE)) }
+    )
     LaunchedEffect(Unit) {
         viewModel.sideEffect.collectLatest { sideEffect ->
             when (sideEffect) {
