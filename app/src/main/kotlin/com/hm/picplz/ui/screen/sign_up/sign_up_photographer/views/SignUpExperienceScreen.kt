@@ -166,7 +166,7 @@ fun SignUpExperienceScreen(
                     text = "다음",
                     onClick = {
                         if (currentState.hasPhotographyExperience == true) {
-                            viewModel.handleIntent(Navigate("sign-up-career-period"))
+                            viewModel.handleIntent(Navigate("sign-up-detail-experience"))
                         } else if (currentState.hasPhotographyExperience == false){
                             viewModel.handleIntent(Navigate("sign-up-photography-vibe"))
                         }

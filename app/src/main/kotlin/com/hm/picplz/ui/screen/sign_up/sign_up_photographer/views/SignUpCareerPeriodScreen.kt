@@ -163,6 +163,7 @@ fun SignUpCareerPeriodScreen(
                     onClick = {
                         viewModel.handleIntent(SetCareerPeriod)
                         viewModel.handleIntent(InitializeCareerValues)
+                        viewModel.handleIntent(Navigate("sign-up-photography-vibe"))
                     },
                     enabled = currentState.yearValue != null && currentState.monthValue != null,
                     containerColor = MainThemeColor.Black
