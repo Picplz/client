@@ -11,23 +11,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hm.picplz.ui.theme.MainThemeColor
-import com.hm.picplz.ui.theme.PicplzTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonNumberSelector(
-    currentValue: Int,
+    currentValue: Int? = null,
     onValueSelected: (Int) -> Unit,
     maxValue: Int,
     minValue: Int = 0,
     onDismiss: () -> Unit,
     visible: Boolean
-
 ) {
     if (visible) {
         ModalBottomSheet(
@@ -54,16 +52,18 @@ fun CommonNumberSelector(
                                     onValueSelected(index + minValue)
                                     onDismiss()
                                 },
-                        )
-                        Text(
-                            text = (index + minValue).toString(),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = if (index + minValue == currentValue)
-                                    MainThemeColor.Black
-                                else
-                                    MainThemeColor.Gray3
-                            ),
-                        )
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = (index + minValue).toString(),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = if (index + minValue == currentValue)
+                                        MainThemeColor.Black
+                                    else
+                                        MainThemeColor.Gray3
+                                ),
+                            )
+                        }
                     }
                 }
             }
