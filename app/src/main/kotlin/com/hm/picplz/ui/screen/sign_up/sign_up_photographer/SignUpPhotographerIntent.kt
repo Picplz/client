@@ -17,7 +17,8 @@ sealed class SignUpPhotographerIntent {
     data class NavigateWithSubmit(val destination: String) : SignUpPhotographerIntent()
     data object SetUserPhotographyVibe: SignUpPhotographerIntent()
     data class SetIsOpenDialog(val isOpen: Boolean) : SignUpPhotographerIntent()
-    data class SetCareerYear(val year: Int) : SignUpPhotographerIntent()
-    data class SetCareerMonth(val month: Int) : SignUpPhotographerIntent()
+    data class SetYearValue(val year: Int) : SignUpPhotographerIntent()
+    data class SetMonthValue(val month: Int) : SignUpPhotographerIntent()
+    data object SetCareerPeriod : SignUpPhotographerIntent()
     data class SetSelectedSelector(val selectedSelector: SelectorType) : SignUpPhotographerIntent()
 }

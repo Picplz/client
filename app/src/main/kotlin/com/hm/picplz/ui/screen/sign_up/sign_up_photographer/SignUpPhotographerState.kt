@@ -10,6 +10,12 @@ enum class SelectorType {
     YEAR,
     MONTH
 }
+
+data class CareerPeriod(
+    val years: Int = 0,
+    val months: Int = 0
+)
+
 data class SignUpPhotographerState(
     val currentStep: Int? = 0,
     val isLoading: Boolean = false,
@@ -22,8 +28,9 @@ data class SignUpPhotographerState(
     val selectedVibeChipList: List<ChipItem> = listOf(),
     val editingChipId: String? = null,
     val showInfoDialog: Boolean = false,
-    val careerYear: Int? = null,
-    val careerMonth: Int? = null,
+    val yearValue: Int? = null,
+    val monthValue: Int? = null,
+    val careerPeriod: CareerPeriod? = null,
     val selectedSelector: SelectorType = SelectorType.NONE,
 ) {
     companion object {
