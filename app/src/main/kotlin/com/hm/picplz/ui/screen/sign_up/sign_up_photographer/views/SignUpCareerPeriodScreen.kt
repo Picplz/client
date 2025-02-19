@@ -45,6 +45,10 @@ fun SignUpCareerPeriodScreen(
 ) {
     val currentState = viewModel.state.collectAsState().value
 
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(InitializeCareerValues)
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -95,7 +99,7 @@ fun SignUpCareerPeriodScreen(
                     ) {
                         CommonOutlinedTextField(
                             modifier = Modifier.width(85.dp),
-                            value = currentState.careerYear?.toString() ?: "",
+                            value = currentState.yearValue?.toString() ?: "",
                             onValueChange = {},
                             placeholder = "0",
                             imeAction = ImeAction.Next,
@@ -121,7 +125,7 @@ fun SignUpCareerPeriodScreen(
                         Spacer(modifier = modifier.width(20.dp))
                         CommonOutlinedTextField(
                             modifier = Modifier.width(85.dp),
-                            value = currentState.careerMonth?.toString() ?: "",
+                            value = currentState.monthValue?.toString() ?: "",
                             onValueChange = {},
                             placeholder = "0",
                             imeAction = ImeAction.Next,
@@ -156,16 +160,21 @@ fun SignUpCareerPeriodScreen(
             ) {
                 CommonBottomButton(
                     text = "다음",
-                    onClick = {},
+                    onClick = {
+                        viewModel.handleIntent(SetCareerPeriod)
+                        viewModel.handleIntent(InitializeCareerValues)
+                    },
+                    enabled = currentState.yearValue != null && currentState.monthValue != null,
                     containerColor = MainThemeColor.Black
                 )
             }
         }
     }
+
     CommonNumberSelector(
-        currentValue = currentState.careerYear,
+        currentValue = currentState.yearValue,
         onValueSelected = { year ->
-            viewModel.handleIntent(SetCareerYear(year))
+            viewModel.handleIntent(SetYearValue(year))
             viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE))
         },
         maxValue = 50,
@@ -173,20 +182,24 @@ fun SignUpCareerPeriodScreen(
         onDismiss = { viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE)) }
     )
     CommonNumberSelector(
-        currentValue = currentState.careerMonth,
+        currentValue = currentState.monthValue,
         onValueSelected = { month ->
-            viewModel.handleIntent(SetCareerMonth(month))
+            viewModel.handleIntent(SetMonthValue(month))
             viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE))
         },
         maxValue = 12,
         visible = currentState.selectedSelector === SelectorType.MONTH,
         onDismiss = { viewModel.handleIntent(SetSelectedSelector(SelectorType.NONE)) }
     )
+
     LaunchedEffect(Unit) {
         viewModel.sideEffect.collectLatest { sideEffect ->
             when (sideEffect) {
                 is SignUpPhotographerSideEffect.NavigateToPrev -> {
                     signUpPhotographerNavController.popBackStack()
+                }
+                is SignUpPhotographerSideEffect.Navigate -> {
+                    signUpPhotographerNavController.navigate(sideEffect.destination)
                 }
                 else -> {}
             }
