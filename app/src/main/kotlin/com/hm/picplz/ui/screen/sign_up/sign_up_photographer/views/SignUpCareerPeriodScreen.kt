@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -93,13 +94,20 @@ fun SignUpCareerPeriodScreen(
                     ) {
                         CommonOutlinedTextField(
                             modifier = Modifier.width(85.dp),
-                            value = "0",
+                            value = "",
                             onValueChange = {},
                             placeholder = "0",
                             imeAction = ImeAction.Next,
                             keyboardActions = {},
                             readOnly = true,
                             showError = false,
+                            textStyle = MaterialTheme.typography.titleMedium.copy(
+                                textAlign = TextAlign.Center
+                            ),
+                            placeholderStyle = MaterialTheme.typography.titleMedium.copy(
+                                textAlign = TextAlign.Center,
+                                color = MainThemeColor.Gray
+                            ),
                         )
                         Spacer(modifier = modifier.width(7.dp))
                         Text(
@@ -116,6 +124,13 @@ fun SignUpCareerPeriodScreen(
                             keyboardActions = {},
                             readOnly = true,
                             showError = false,
+                            textStyle = MaterialTheme.typography.titleMedium.copy(
+                                textAlign = TextAlign.Center
+                            ),
+                            placeholderStyle = MaterialTheme.typography.titleMedium.copy(
+                                textAlign = TextAlign.Center,
+                                color = MainThemeColor.Gray
+                            ),
                         )
                         Spacer(modifier = modifier.width(7.dp))
                         Text(

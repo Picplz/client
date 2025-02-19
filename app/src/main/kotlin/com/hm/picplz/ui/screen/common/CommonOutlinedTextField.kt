@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +34,14 @@ fun CommonOutlinedTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
+    placeholderStyle: TextStyle = TextStyle(
+        fontSize = 16.sp,
+        color = Color.Gray
+    ),
+    textStyle: TextStyle = TextStyle(
+        fontSize = 16.sp,
+        color = Color.Black
+    ),
     errors: List<NicknameFieldError> = emptyList(),
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: () -> Unit = {},
@@ -79,7 +89,8 @@ fun CommonOutlinedTextField(
             onAny = {
                 keyboardActions()
             }
-        )
+        ),
+        textStyle = textStyle,
     ) {
         OutlinedTextFieldDefaults.DecorationBox(
             value = value,
@@ -92,8 +103,8 @@ fun CommonOutlinedTextField(
                 if (placeholder.isNotEmpty())
                     Text(
                         text = placeholder,
-                        fontSize = 16.sp,
-                        color = Color.Gray
+                        style = placeholderStyle,
+                        modifier = Modifier.fillMaxWidth(),
                     )
             },
             supportingText = if (showError) {
