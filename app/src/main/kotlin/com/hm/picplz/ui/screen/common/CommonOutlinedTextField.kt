@@ -1,8 +1,10 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hm.picplz.data.model.NicknameFieldError
@@ -35,7 +38,10 @@ fun CommonOutlinedTextField(
     shape: Shape = RoundedCornerShape(4.dp),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     singleLine: Boolean = true,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onClick: (() -> Unit)? = null,
+    readOnly: Boolean = false,
+    showError: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val focusRequester = remember { FocusRequester() }
@@ -52,12 +58,20 @@ fun CommonOutlinedTextField(
 
     BasicTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = if (!readOnly) onValueChange else { _ -> },
         modifier = modifier
-            .fillMaxWidth(),
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = onClick
+                    )
+                } else Modifier
+            ),
         singleLine = singleLine,
         interactionSource = interactionSource,
-        enabled = enabled,
+        enabled = enabled && !readOnly,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = imeAction
         ),
@@ -82,18 +96,20 @@ fun CommonOutlinedTextField(
                         color = Color.Gray
                     )
             },
-            supportingText = {
-                if (isError) {
-                    Text(
-                        text = errors.first().message,
-                        fontSize = 12.sp,
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(18.dp))
+            supportingText = if (showError) {
+                {
+                    if (isError) {
+                        Text(
+                            text = errors.first().message,
+                            fontSize = 12.sp,
+                            color = Color.Red,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(18.dp))
+                    }
                 }
-            },
+            } else null,
             contentPadding = OutlinedTextFieldDefaults.contentPadding(
                 start = 16.dp,
                 top = 8.dp,
