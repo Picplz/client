@@ -145,6 +145,12 @@ class SignUpPhotographerViewModel : ViewModel() {
                     )
                 }
             }
+            is InitializeCareerValues -> {
+                _state.update { it.copy(
+                    yearValue = null,
+                    monthValue = null
+                )}
+            }
             is SetSelectedSelector -> {
                 _state.update { it.copy( selectedSelector = intent.selectedSelector ) }
             }
