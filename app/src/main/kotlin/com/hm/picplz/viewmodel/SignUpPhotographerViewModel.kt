@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hm.picplz.data.model.ChipItem
 import com.hm.picplz.data.model.PhotographyExperience
+import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SelectorType
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerIntent
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerIntent.*
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.SignUpPhotographerSideEffect
@@ -127,6 +128,15 @@ class SignUpPhotographerViewModel : ViewModel() {
             }
             is SetIsOpenDialog -> {
                 _state.update { it.copy( showInfoDialog = intent.isOpen) }
+            }
+            is SetCareerYear -> {
+                _state.update { it.copy( careerYear = intent.year ) }
+            }
+            is SetCareerMonth -> {
+                _state.update { it.copy( careerMonth = intent.month ) }
+            }
+            is SetSelectedSelector -> {
+                _state.update { it.copy( selectedSelector = intent.selectedSelector ) }
             }
         }
     }
