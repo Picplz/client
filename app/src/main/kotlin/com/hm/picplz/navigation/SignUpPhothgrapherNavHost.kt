@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.views.SignUpCareerPeriodScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.views.SignUpDetailExpScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.views.SignUpExperienceScreen
 import com.hm.picplz.ui.screen.sign_up.sign_up_photographer.views.SignUpPhotographyVibeScreen
@@ -43,6 +44,13 @@ fun SignUpPhotographerNavHost(
                 modifier = modifier,
                 signUpPhotographerNavController = signUpPhotographerNavController,
                 mainNavController = mainNavController,
+                viewModel = viewModel
+            )
+        }
+        composable("sign-up-career-period") {
+            SignUpCareerPeriodScreen(
+                modifier = modifier,
+                signUpPhotographerNavController = signUpPhotographerNavController,
                 viewModel = viewModel
             )
         }

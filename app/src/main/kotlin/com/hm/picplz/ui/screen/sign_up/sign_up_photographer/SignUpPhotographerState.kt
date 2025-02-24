@@ -5,6 +5,17 @@ import com.hm.picplz.data.model.PhotographyExperience
 import com.hm.picplz.data.model.User
 import com.hm.picplz.viewmodel.emptyUserData
 
+enum class SelectorType {
+    NONE,
+    YEAR,
+    MONTH
+}
+
+data class CareerPeriod(
+    val years: Int = 0,
+    val months: Int = 0
+)
+
 data class SignUpPhotographerState(
     val currentStep: Int? = 0,
     val isLoading: Boolean = false,
@@ -17,6 +28,10 @@ data class SignUpPhotographerState(
     val selectedVibeChipList: List<ChipItem> = listOf(),
     val editingChipId: String? = null,
     val showInfoDialog: Boolean = false,
+    val yearValue: Int? = null,
+    val monthValue: Int? = null,
+    val careerPeriod: CareerPeriod? = null,
+    val selectedSelector: SelectorType = SelectorType.NONE,
 ) {
     companion object {
         private fun defaultExperienceChipList(): List<ChipItem> {
@@ -38,19 +53,7 @@ data class SignUpPhotographerState(
         }
 
         fun idle(): SignUpPhotographerState {
-            return SignUpPhotographerState(
-                currentStep = 0,
-                isLoading = false,
-                error = null,
-                userInfo = emptyUserData,
-                hasPhotographyExperience = null,
-                selectedPhotographyExperienceId = null,
-                experienceChipList = defaultExperienceChipList(),
-                vibeChipList = defaultVibeChipList(),
-                selectedVibeChipList = listOf(),
-                editingChipId = null,
-                showInfoDialog = false,
-            )
+            return SignUpPhotographerState()
         }
     }
 }

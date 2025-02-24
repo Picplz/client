@@ -138,7 +138,7 @@ fun SignUpDetailExpScreen(
                     text = "다음",
                     onClick = {
                         viewModel.handleIntent(SetUserPhotographyExperience)
-                        viewModel.handleIntent(Navigate("sign-up-photography-vibe"))
+                        viewModel.handleIntent(Navigate("sign-up-career-period"))
                     },
                     enabled = currentState.selectedPhotographyExperienceId != null,
                     containerColor = MainThemeColor.Black
