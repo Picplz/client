@@ -1,6 +1,5 @@
 package com.hm.picplz.ui.screen.search_photographer
 
-import PhotographerListScreen
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -50,7 +49,9 @@ import kotlinx.coroutines.flow.collectLatest
 import com.hm.picplz.R
 import androidx.compose.ui.layout.ContentScale
 import com.hm.picplz.ui.screen.search_photographer.composable.AddressMarker
+import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerListSheet
 import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerProfile
+import com.hm.picplz.ui.screen.search_photographer.composable.PhotographerSheet
 import com.hm.picplz.ui.screen.search_photographer.composable.RefetchButton
 import com.hm.picplz.utils.LocationUtil.getDistance
 import com.kakao.vectormap.LatLng
@@ -141,11 +142,15 @@ fun SearchPhotographerScreen(
         modifier = Modifier
             .fillMaxSize(),
         sheetContent = {
-            PhotographerListScreen()
+            if (currentState.selectedPhotographerId === null) {
+                PhotographerListSheet()
+            } else {
+                PhotographerSheet()
+            }
         },
         scaffoldState = scaffoldState,
-//        sheetPeekHeight = currentState.sheetPeekHeight,
-//        sheetMaxHeight = currentState.sheetMaxHeight
+        sheetPeekHeight = currentState.sheetPeekHeight,
+        sheetMaxHeight = currentState.sheetMaxHeight
     ){
         Column(
             modifier = modifier

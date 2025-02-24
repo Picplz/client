@@ -14,8 +14,8 @@ data class SearchPhotographerState (
     val nearbyPhotographers: FilteredPhotographers = FilteredPhotographers(),
     val randomOffsets: Map<Int, Pair<Float, Float>> = emptyMap(),
     val selectedPhotographerId: Int? = null,
-    val sheetMaxHeight: Dp = 600.dp,
-    val sheetPeekHeight: Dp? = null
+    val sheetMaxHeight: Dp = 750.dp,
+    val sheetPeekHeight: Dp? = 30.dp
 ) {
     companion object {
         fun idle(): SearchPhotographerState {

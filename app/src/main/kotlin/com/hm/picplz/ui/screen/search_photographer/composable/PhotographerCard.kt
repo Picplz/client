@@ -1,0 +1,102 @@
+package com.hm.picplz.ui.screen.search_photographer.composable
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.hm.picplz.ui.model.Photographer
+import com.hm.picplz.ui.theme.MainThemeColor
+
+@Composable
+fun PhotographerCard (
+    modifier: Modifier = Modifier,
+    photographer: Photographer,
+) {
+    Row (
+        modifier = modifier
+            .background(color = MainThemeColor.White)
+            .height(140.dp)
+            .padding(vertical = 20.dp)
+            .width(345.dp)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = photographer.profileImageUri),
+            contentDescription = "작가 카드 프로필",
+            modifier = Modifier
+                .size(90.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column (
+            modifier = Modifier.fillMaxSize()
+        ){
+            Row (
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+                    .fillMaxSize()
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ){
+                Column {
+                    Text(
+                        text = photographer.name,
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            lineHeight = 16.sp * 1.4,
+                            letterSpacing = 0.sp,
+                        )
+                    )
+                    DistanceText(
+                        distance = photographer.distance.toString(),
+                        duration = "도보 3분"
+                    )
+                }
+                if (photographer.isActive) {
+                    ActiveStatusBadge(text = "바로 촬영")
+                }
+            }
+            val vibeTags = listOf(
+                "#을지로 감성",
+                "#키치 감성",
+                "#MZ 감성",
+                "#퇴폐 감성"
+            )
+            VibeTags(tags = vibeTags)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PhotographerCardPreview() {
+    PhotographerCard(
+        photographer = Photographer(
+            id = 1,
+            name = "작가1",
+            location = null,
+            profileImageUri = "https://picsum.photos/200",
+            isActive = false,
+            workingArea = "마포구 서교동",
+            distance = 100,
+            followers = listOf(1, 2, 3),
+            socialAccount = "@account",
+            portfolioPhotos = List(5) { "https://picsum.photos/100" },
+        )
+    )
+}

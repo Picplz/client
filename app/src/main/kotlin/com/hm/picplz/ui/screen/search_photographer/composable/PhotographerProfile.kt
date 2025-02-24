@@ -1,5 +1,6 @@
 package com.hm.picplz.ui.screen.search_photographer.composable
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -38,6 +39,7 @@ import com.hm.picplz.R
 import com.hm.picplz.ui.theme.MainThemeColor
 import com.hm.picplz.ui.theme.Pretendard
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun PhotographerProfile(
     name: String,
